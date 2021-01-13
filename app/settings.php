@@ -5,10 +5,9 @@ use DI\ContainerBuilder;
 use Monolog\Logger;
 
 return function (ContainerBuilder $containerBuilder) {
-    // Global Settings Object
     $containerBuilder->addDefinitions([
         'settings' => [
-            'displayErrorDetails' => true, // Should be set to false in production
+            'displayErrorDetails' => $_ENV["APP_ENV"] === "DEVELOPMENT" ? true : false, // Should be set to false in production
             'logger' => [
                 'name' => 'ambis-kuliah',
                 'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',

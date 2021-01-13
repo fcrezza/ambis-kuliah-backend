@@ -11,23 +11,39 @@ use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use App\Domain\Token\Token;
 
 class JWTMiddleWare {
-    private $container;
+    private $token;
 
     public function __construct(Container $container) {
-        $this->container = $container;
+        $this->token = $container->get(Token::class);
     }
 
     public function __invoke(Request $request, RequestHandler $handler): Response {
-        $response = $handler->handle($request);
-        $token = $this->container->get(Token::class);
-        if (!isset($_COOKIE["accessToken"])) {
-          $response->getBody()->write("waala access");
-          return $response->withStatus(403);
-        } else if (!isset($_COOKIE["refreshToken"])) {
-            $response->getBody()->write("waala refresh");
-            return $response->withStatus(403);
+        $validAccessToken = '';
+        $validRefreshToken = '';
+
+        if (isset($_COOKIE["accessToken"])) {
+            $validAccessToken = $this->token->verifyToken("access token", $_COOKIE["accessToken"]);
+        } else if (isset($_COOKIE["refreshToken"])) {
+            $validRefreshToken = $this->token->verifyToken("refresh token", $_COOKIE["refreshToken"]);
         }
 
+        if ($validAccessToken) {
+            $request = $request->withAttribute("userId", $validAccessToken->data->id);
+            $response = $handler->handle($request);
+            return $response;
+        }
+
+        if (!$validAccessToken && $validRefreshToken) {
+            $accessToken = $this->token->createToken("access token", (array)$validRefreshToken->data);
+            $refreshToken = $this->token->createToken("refresh token", (array)$validRefreshToken->data);
+            $this->token->sendToken("accessToken", $accessToken);
+            $this->token->sendToken("refreshToken", $refreshToken);
+            $request = $request->withAttribute("userId", $validRefreshToken->data->id);
+            $response = $handler->handle($request);
+            return $response;
+        }
+
+        $response = $handler->handle($request);
         return $response;
     }
 }

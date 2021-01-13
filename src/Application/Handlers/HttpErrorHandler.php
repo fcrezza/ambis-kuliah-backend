@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace App\Application\Handlers;
 
-use App\Application\Actions\ActionError;
-use App\Application\Actions\ActionPayload;
 use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
@@ -16,6 +14,9 @@ use Slim\Exception\HttpNotImplementedException;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Handlers\ErrorHandler as SlimErrorHandler;
 use Throwable;
+
+use App\Application\Actions\ActionError;
+use App\Application\Actions\ActionPayload;
 
 class HttpErrorHandler extends SlimErrorHandler
 {
@@ -49,7 +50,7 @@ class HttpErrorHandler extends SlimErrorHandler
                 $error->setType(ActionError::NOT_IMPLEMENTED);
             }
         }
-
+        // PDO ERROR / Database query NOT handled, should we handle it?
         if (
             !($exception instanceof HttpException)
             && $exception instanceof Throwable

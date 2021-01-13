@@ -12,9 +12,7 @@ use App\Application\Actions\Action;
 use App\Domain\User\UserRepository;
 
 class User extends Action {
-   private $container;
-
-    protected $userRepository;
+   private $userRepository;
 
     public function __construct(LoggerInterface $logger, UserRepository $userRepository) {
         parent::__construct($logger);
@@ -22,6 +20,15 @@ class User extends Action {
     }
 
     protected function action(): ResponseInterface {
-      return $this->respondWithData(["lol" => "lol"]);
+      $userId = $this->request->getAttribute("userId");
+
+      if (!$userId) {
+        return $this->respondWithData(["message" => "Operasi memerlukan authentikasi!"], 401);
+      }
+
+      $userData = $this->userRepository->getUserById((int) $userId);
+      $userTopics = $this->userRepository->getUserTopics((int) $userId);
+      $responseBody = array_merge($userData, ["topics" => $userTopics]);
+      return $this->respondWithData($responseBody);
     }
 }
