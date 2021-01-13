@@ -10,10 +10,16 @@ return function (ContainerBuilder $containerBuilder) {
         'settings' => [
             'displayErrorDetails' => true, // Should be set to false in production
             'logger' => [
-                'name' => 'slim-app',
+                'name' => 'ambis-kuliah',
                 'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
                 'level' => Logger::DEBUG,
             ],
+            "database" => [
+                "host" => "localhost",
+                "name" => "ambiskuliah",
+                "username" => "root",
+                "password" => ""
+            ]
         ],
     ]);
 };
