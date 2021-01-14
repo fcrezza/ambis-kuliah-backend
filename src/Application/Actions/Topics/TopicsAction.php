@@ -18,6 +18,11 @@ class TopicsAction extends Action {
     }
 
     protected function action(): Response {
+      $userId = $this->request->getAttribute("userId");
+      if (!$userId) {
+        return $this->respondWithData(["message" => "Operasi memerlukan authentikasi!"], 401);
+      }
+
       $topics = $this->topicsRepository->findAll();
       $this->logger->info("hit topics route!");
       return $this->respondWithData($topics);
