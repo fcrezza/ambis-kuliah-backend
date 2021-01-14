@@ -10,7 +10,7 @@ use App\Domain\Token\Token;
 
 class ServiceToken implements Token {
 
-  public function verifyToken(string $name, string $token): object {
+  public function verifyToken(string $name, string $token) {
     try {
       $secretKey = $this->getSecretKey($name);
       $decodedToken = JWT::decode($token, $secretKey, ['HS256']);

@@ -24,17 +24,17 @@ class Signup extends Action {
 
     protected function action(): ResponseInterface {
       $input = $this->getFormData();
-      $userData = $this->userRepository->getUserByUsername($input->username);
-
-      if ($userData) {
-        $errorData = ["message" => "Username " . $input->username . " sudah digunakan"];
-        return $this->respondWithData($errorData, 404);
-      }
-
       $userData = $this->userRepository->getUserByEmail($input->email);
 
       if ($userData) {
         $errorData = ["message" => "Email " . $input->email . " sudah digunakan"];
+        return $this->respondWithData($errorData, 404);
+      }
+
+      $userData = $this->userRepository->getUserByUsername($input->username);
+
+      if ($userData) {
+        $errorData = ["message" => "Username " . $input->username . " sudah digunakan"];
         return $this->respondWithData($errorData, 404);
       }
 
