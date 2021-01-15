@@ -60,8 +60,32 @@ class ServiceUserRepository implements UserRepository {
       $userData = $this->getUserById((int)$lastInsertId);
       return array_merge($userData, ["topics" => []]);
     } catch (PDOException $error) {
-      $dbh->rollback();
+      $this->connection->rollback();
       throw $error;
     }
   }
+
+  public function updateUserTopics(int $userId,array $addedTopics, array $deletedTopics) {
+    $this->connection->beginTransaction();
+    try {
+      if (count($deletedTopics)) {
+        $query = $this->connection->prepare("delete from userTopics where userId = ? and topicId = ?");
+        foreach ($deletedTopics as $topic) {
+          $query->execute([$userId, $topic]);
+        }
+      }
+
+      if (count($addedTopics)) {
+        $query = $this->connection->prepare("insert userTopics (userId, topicId) values (?, ?)");
+        foreach ($addedTopics as $topic) {
+          $query->execute([$userId, $topic]);
+        }
+      }
+
+      $this->connection->commit();
+    } catch (PDOException $error) {
+      $this->connection->rollback();
+      throw $error;
+    }
+}
 }

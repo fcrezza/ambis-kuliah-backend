@@ -12,7 +12,7 @@ use App\Application\Actions\Action;
 use App\Domain\User\UserRepository;
 use App\Domain\Token\Token;
 
-class Signup extends Action {
+class SignupAction extends Action {
    private $token;
    private $userRepository;
 

@@ -9,5 +9,6 @@ interface UserRepository {
   public function getUserByEmail(string $email);
   public function getUserPassword(int $id);
   public function getUserTopics(int $id);
+  public function updateUserTopics(int $userId, array $addedTopics, array $deletedTopics);
   public function insertUser(array $data);
 }

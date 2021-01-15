@@ -9,7 +9,7 @@ use Psr\Log\LoggerInterface;
 use App\Application\Actions\Action;
 use App\Domain\Topics\TopicsRepository;
 
-class TopicsAction extends Action {
+class GetTopicsAction extends Action {
     protected $topicsRepository;
 
     public function __construct(LoggerInterface $logger, TopicsRepository $topicsRepository) {

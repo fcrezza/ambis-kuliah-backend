@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
 use App\Application\Actions\Action;
 use App\Domain\User\UserRepository;
 
-class User extends Action {
+class GetUserAction extends Action {
    private $userRepository;
 
     public function __construct(LoggerInterface $logger, UserRepository $userRepository) {

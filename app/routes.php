@@ -8,11 +8,12 @@ use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 use Slim\Exception\HttpNotFoundException;
 
 use App\Application\Middleware\JWTMiddleware;
-use App\Application\Actions\Auth\Login;
-use App\Application\Actions\Auth\Signup;
-use App\Application\Actions\Auth\Logout;
-use App\Application\Actions\Auth\User;
-use App\Application\Actions\Topics\TopicsAction;
+use App\Application\Actions\Auth\LoginAction;
+use App\Application\Actions\Auth\SignupAction;
+use App\Application\Actions\Auth\LogoutAction;
+use App\Application\Actions\Auth\GetUserAction;
+use App\Application\Actions\Auth\UpdateUserAction;
+use App\Application\Actions\Topics\GetTopicsAction;
 
 return function (App $app) {
   $app->options('/{routes:.*}', function (Request $request, Response $response) {
@@ -20,13 +21,14 @@ return function (App $app) {
     return $response;
   });
 
-  $app->get('/topics', TopicsAction::class)->add(JWTMiddleWare::class);
+  $app->get('/topics', GetTopicsAction::class)->add(JWTMiddleWare::class);
 
   $app->group('/auth', function (Group $group) {
-    $group->post('/login', Login::class);
-    $group->post('/signup', Signup::class);
-    $group->get('/logout', Logout::class);
-    $group->get('/user', User::class)->add(JWTMiddleWare::class);
+    $group->post('/login', LoginAction::class);
+    $group->post('/signup', SignupAction::class);
+    $group->get('/logout', LogoutAction::class);
+    $group->get('/user', GetUserAction::class)->add(JWTMiddleWare::class);
+    $group->put('/user', UpdateUserAction::class)->add(JWTMiddleWare::class);
   });
 
   /**

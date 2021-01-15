@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
 use App\Application\Actions\Action;
 use App\Domain\User\UserRepository;
 
-class Logout extends Action {
+class LogoutAction extends Action {
     public function __construct(LoggerInterface $logger) {
         parent::__construct($logger);
     }
