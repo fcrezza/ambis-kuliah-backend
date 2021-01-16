@@ -51,8 +51,8 @@ class ServiceUserRepository implements UserRepository {
   public function insertUser(array $data) {
     $this->connection->beginTransaction();
     try {
-      $userDataQuery = $this->connection->prepare("insert into users (email, username, fullname) values (? , ? ,?)");
-      $userDataQuery->execute([$data["email"], $data["username"], $data["fullname"]]);
+      $userDataQuery = $this->connection->prepare("insert into users (email, username, fullname, avatarUrl) values (?, ?, ?, ?)");
+      $userDataQuery->execute([$data["email"], $data["username"], $data["fullname"], $data["avatarUrl"]]);
       $lastInsertId = $this->connection->lastInsertId();
       $passwordQuery = $this->connection->prepare("insert into userpasswords (userId, hashedPassword) values (? ,?)");
       $passwordQuery->execute([$lastInsertId, $data["password"]]);

@@ -43,7 +43,8 @@ class SignupAction extends Action {
         "username" => $input->username,
         "fullname" => $input->fullname,
         "email" => $input->email,
-        "password" => $hashedPassword
+        "password" => $hashedPassword,
+        "avatarUrl" => $input->avatarUrl,
       ]);
 
       $accessToken = $this->token->createToken("access token", ["id" => $responseBody["id"]]);
