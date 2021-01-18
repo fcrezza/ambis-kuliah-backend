@@ -14,6 +14,7 @@ use App\Application\Actions\Auth\LogoutAction;
 use App\Application\Actions\Auth\GetUserAction;
 use App\Application\Actions\Auth\UpdateUserAction;
 use App\Application\Actions\Topics\GetTopicsAction;
+use App\Application\Actions\Posts\PostsAction;
 
 return function (App $app) {
   $app->options('/{routes:.*}', function (Request $request, Response $response) {
@@ -29,6 +30,16 @@ return function (App $app) {
     $group->get('/logout', LogoutAction::class);
     $group->get('/user', GetUserAction::class)->add(JWTMiddleWare::class);
     $group->put('/user', UpdateUserAction::class)->add(JWTMiddleWare::class);
+  });
+
+  $app->group('/posts', function (Group $group) {
+    $group->get('', PostsAction::class)->add(JWTMiddleWare::class);
+    // $group->get('/{username}', SignupAction::class);
+    // $group->post('/{username}', SignupAction::class)->add(JWTMiddleWare::class);
+    // $group->get('/{username}/{postId}', SignupAction::class);
+    // $group->post('/{username}/{postId}', SignupAction::class);
+    // $group->delete('/{username}/{postId}', SignupAction::class);
+    // $group->get('/{username}/{postId}/replies', SignupAction::class);
   });
 
   /**

@@ -20,6 +20,17 @@ class ServiceUserRepository implements UserRepository {
     return $result;
   }
 
+  public function findByIds(array $userIds): array {
+    $arrIdsLength = count($userIds);
+    $placeholders = array_fill(0, $arrIdsLength, "?");
+    $placeholders = join(",", $placeholders);
+    $statement = "select users.id, users.username, users.fullname, users.email, users.bio, users.avatarUrl from users where users.id in ($placeholders)";
+    $preparedStatement = $this->connection->prepare($statement);
+    $preparedStatement->execute($userIds);
+    $data = $preparedStatement->fetchAll(PDO::FETCH_ASSOC);
+    return $data;
+  }
+
   public function getUserById(int $id) {
     $query = $this->connection->prepare("select * from users where id = ?");
     $query->execute([$id]);
@@ -87,5 +98,5 @@ class ServiceUserRepository implements UserRepository {
       $this->connection->rollback();
       throw $error;
     }
-}
+  }
 }

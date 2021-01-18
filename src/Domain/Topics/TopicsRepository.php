@@ -5,4 +5,5 @@ namespace App\Domain\Topics;
 
 interface TopicsRepository {
   public function findAll(): array;
+  public function findByNames(array $names): array;
 }
