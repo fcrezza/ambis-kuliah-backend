@@ -17,6 +17,7 @@ use App\Application\Actions\Topics\GetTopicsAction;
 use App\Application\Actions\Posts\GetAllPostsAction;
 use App\Application\Actions\Posts\GetUserPostsAction;
 use App\Application\Actions\Posts\GetUserPostAction;
+use App\Application\Actions\Posts\GetUserPostRepliesAction;
 
 return function (App $app) {
   $app->options('/{routes:.*}', function (Request $request, Response $response) {

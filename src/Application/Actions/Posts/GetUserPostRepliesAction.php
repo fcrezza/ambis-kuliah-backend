@@ -18,21 +18,27 @@ class GetUserPostRepliesAction extends PostsAction {
       }
 
       $username = $this->resolveArg("username");
+      $postId = intval($this->resolveArg("postId"));
       $user = $this->userRepository->getUserByUsername($username);
 
       if (!$user) {
         return $this->respondWithData(["message" => "data tidak dapat ditemukan"], 404);
       }
 
-      $posts = $this->postsRepository->findByUserId(intval($user["id"]), $limitParam);
+      $posts = $this->postsRepository->findRepliesByPostIds([$postId], $limitParam);
+
+      if (!$posts) {
+        return $this->respondWithData([]);
+      }
+
+      $userIds = array_column($posts, "userId");
+      $postAuthors = $this->userRepository->findByIds($userIds);
       $postIds = array_column($posts, "id");
-      $postTopics = $this->postsRepository->findTopicsByPostIds($postIds);
       $postStats = $this->postsRepository->findStatsByPostIds($postIds);
       $postReplies = $this->postsRepository->findRepliesByPostIds($postIds);
       $postMedia = $this->postsRepository->findMediaByPostIds($postIds);
-      $responseBody = array_map(function($post) use ($postTopics, $user, $postStats, $postReplies, $postMedia) {
-        $post["topics"] = $this->constructPostTopics($post, $postTopics);
-        $post["author"] = $user;
+      $responseBody = array_map(function($post) use ($postAuthors, $postStats, $postReplies, $postMedia) {
+        $post["author"] = $this->constructPostAuthor($post, $postAuthors);
         $post["stats"] = $this->constructPostStats($post, $postStats, $postReplies);
         $post["media"] = $this->constructPostMedia($post, $postMedia);
         $userId = intval($this->request->getAttribute("userId"));

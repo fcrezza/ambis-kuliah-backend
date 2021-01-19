@@ -11,5 +11,5 @@ interface PostsRepository {
   public function findTopicsByPostIds(array $postIds): array;
   public function findStatsByPostIds(array $postIds): array;
   public function findMediaByPostIds(array $postIds): array;
-  public function findRepliesByPostIds(array $postIds): array;
+  public function findRepliesByPostIds(array $postIds, array $limit): array;
 }

@@ -49,8 +49,8 @@ abstract class PostsAction extends Action {
       $stats["downvotes"] = array_reduce($postStats, function($acc, $curr) use ($post) {
         return $post["id"] === $curr["postId"] && intval($curr["type"]) === -1 ? $acc + 1 : $acc;
       }, 0);
-      $stats["replies"] = array_reduce($postStats, function($acc, $curr) use ($post) {
-        return $post["id"] === $curr["postId"] && intval($curr["type"]) === 2 ? $acc + 1 : $acc;
+      $stats["replies"] = array_reduce($postReplies, function($acc, $curr) use ($post) {
+        return $post["id"] == intval($curr["repliedPostId"]) ? $acc + 1 : $acc;
       }, 0);
 
       return $stats;

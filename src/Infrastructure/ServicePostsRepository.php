@@ -85,13 +85,28 @@ class ServicePostsRepository implements PostsRepository {
     return $data;
   }
 
-  public function findRepliesByPostIds(array $postIds): array {
+  public function findRepliesByPostIds(array $postIds, array $limit = []): array {
     $arrIdsLength = count($postIds);
     $placeholders = array_fill(0, $arrIdsLength, "?");
     $placeholders = join(",", $placeholders);
-    $statement = "select posts.* from posts where posts.RepliedPostId in ($placeholders)";
+    $statement = "";
+    $isLimitExist = count($limit);
+
+    if ($isLimitExist) {
+      $statement = "select posts.* from posts where posts.RepliedPostId in ($placeholders) limit ?, ?";
+    } else {
+      $statement = "select posts.* from posts where posts.RepliedPostId in ($placeholders)";
+    }
+
+    $this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     $preparedStatement = $this->connection->prepare($statement);
-    $preparedStatement->execute($postIds);
+
+    if ($isLimitExist) {
+      $preparedStatement->execute(array_merge($postIds, $limit));
+    } else {
+      $preparedStatement->execute($postIds);
+    }
+
     $data = $preparedStatement->fetchAll(PDO::FETCH_ASSOC);
     return $data;
   }
