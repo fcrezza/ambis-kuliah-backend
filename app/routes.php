@@ -39,9 +39,9 @@ return function (App $app) {
     $group->get('/{username}', GetUserPostsAction::class)->add(JWTMiddleWare::class);
     // $group->post('/{username}', PostUserPostAction::class)->add(JWTMiddleWare::class);
     $group->get('/{username}/{postId}', GetUserPostAction::class)->add(JWTMiddleWare::class);
-    // $group->post('/{username}/{postId}', SignupAction::class);
-    // $group->delete('/{username}/{postId}', SignupAction::class);
-    // $group->get('/{username}/{postId}/replies', SignupAction::class);
+    // $group->post('/{username}/{postId}', SignupAction::class)->add(JWTMiddleWare::class);
+    // $group->delete('/{username}/{postId}', SignupAction::class)->add(JWTMiddleWare::class);
+    $group->get('/{username}/{postId}/replies', GetUserPostRepliesAction::class)->add(JWTMiddleWare::class);
   });
 
   /**

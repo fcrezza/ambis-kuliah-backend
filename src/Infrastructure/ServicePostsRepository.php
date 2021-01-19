@@ -14,6 +14,14 @@ class ServicePostsRepository implements PostsRepository {
     $this->connection = $conn;
   }
 
+  public function findOneByPostId(int $postId): array {
+    $statement = "select posts.* from posts where id = ?";
+    $preparedStatement = $this->connection->prepare($statement);
+    $preparedStatement->execute([$postId]);
+    $data = $preparedStatement->fetch(PDO::FETCH_ASSOC);
+    return is_array($data) ? $data : [];
+  }
+
   public function findAll(array $limit): array {
     $this->connection->setAttribute( PDO::ATTR_EMULATE_PREPARES, false );
     $statement = "select posts.* from posts limit ?, ?";

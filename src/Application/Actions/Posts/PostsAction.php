@@ -44,13 +44,13 @@ abstract class PostsAction extends Action {
     protected function constructPostStats(array $post, array $postStats, array $postReplies) {
       $stats = [];
       $stats["upvotes"] = array_reduce($postStats, function($acc, $curr) use ($post) {
-        return $post["id"] === $curr["postId"] && $curr["type"] === 1 ? $acc + 1 : $acc;
+        return $post["id"] === $curr["postId"] && intval($curr["type"]) === 1 ? $acc + 1 : $acc;
       }, 0);
       $stats["downvotes"] = array_reduce($postStats, function($acc, $curr) use ($post) {
-        return $post["id"] === $curr["postId"] && $curr["type"] === -1 ? $acc + 1 : $acc;
+        return $post["id"] === $curr["postId"] && intval($curr["type"]) === -1 ? $acc + 1 : $acc;
       }, 0);
       $stats["replies"] = array_reduce($postStats, function($acc, $curr) use ($post) {
-        return $post["id"] === $curr["postId"] && $curr["type"] === 2 ? $acc + 1 : $acc;
+        return $post["id"] === $curr["postId"] && intval($curr["type"]) === 2 ? $acc + 1 : $acc;
       }, 0);
 
       return $stats;
@@ -67,10 +67,10 @@ abstract class PostsAction extends Action {
     protected function constructFeedback(array $post, array $postStats, int $userId) {
       $feedback = [];
       $feedback["upvotes"] = array_reduce($postStats, function($acc, $curr) use ($post, $userId) {
-        return $post["id"] === $curr["postId"] && intval($curr["userId"]) === $userId && $curr["type"] === 1 ? true : $acc;
+        return $post["id"] === $curr["postId"] && intval($curr["userId"]) === $userId && intval($curr["type"]) === 1 ? true : $acc;
       }, false);
       $feedback["downvotes"] = array_reduce($postStats, function($acc, $curr) use ($post, $userId) {
-        return $post["id"] === $curr["postId"] && intval($curr["userId"]) === $userId && $curr["type"] === -1 ? true : $acc;
+        return $post["id"] === $curr["postId"] && intval($curr["userId"]) === $userId && intval($curr["type"]) === -1 ? true : $acc;
       }, false);
       return $feedback;
     }
