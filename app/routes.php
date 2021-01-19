@@ -14,7 +14,9 @@ use App\Application\Actions\Auth\LogoutAction;
 use App\Application\Actions\Auth\GetUserAction;
 use App\Application\Actions\Auth\UpdateUserAction;
 use App\Application\Actions\Topics\GetTopicsAction;
-use App\Application\Actions\Posts\PostsAction;
+use App\Application\Actions\Posts\GetAllPostsAction;
+use App\Application\Actions\Posts\GetUserPostsAction;
+use App\Application\Actions\Posts\GetUserPostAction;
 
 return function (App $app) {
   $app->options('/{routes:.*}', function (Request $request, Response $response) {
@@ -33,10 +35,10 @@ return function (App $app) {
   });
 
   $app->group('/posts', function (Group $group) {
-    $group->get('', PostsAction::class)->add(JWTMiddleWare::class);
-    // $group->get('/{username}', SignupAction::class);
-    // $group->post('/{username}', SignupAction::class)->add(JWTMiddleWare::class);
-    // $group->get('/{username}/{postId}', SignupAction::class);
+    $group->get('', GetAllPostsAction::class)->add(JWTMiddleWare::class);
+    $group->get('/{username}', GetUserPostsAction::class)->add(JWTMiddleWare::class);
+    // $group->post('/{username}', PostUserPostAction::class)->add(JWTMiddleWare::class);
+    $group->get('/{username}/{postId}', GetUserPostAction::class)->add(JWTMiddleWare::class);
     // $group->post('/{username}/{postId}', SignupAction::class);
     // $group->delete('/{username}/{postId}', SignupAction::class);
     // $group->get('/{username}/{postId}/replies', SignupAction::class);

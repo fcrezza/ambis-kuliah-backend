@@ -6,6 +6,7 @@ namespace App\Domain\Posts;
 interface PostsRepository {
   public function findAll(array $limit): array;
   public function findByTopicIds(array $topicIds, array $limit): array;
+  public function findByUserId(int $userId, array $limit): array;
   public function findTopicsByPostIds(array $postIds): array;
   public function findStatsByPostIds(array $postIds): array;
   public function findMediaByPostIds(array $postIds): array;

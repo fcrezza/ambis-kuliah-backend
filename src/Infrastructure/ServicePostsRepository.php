@@ -23,6 +23,15 @@ class ServicePostsRepository implements PostsRepository {
     return $data;
   }
 
+  public function findByUserId(int $userId, array $limit): array {
+    $this->connection->setAttribute( PDO::ATTR_EMULATE_PREPARES, false );
+    $statement = "select posts.* from posts where userId=? limit ?, ?";
+    $preparedStatement = $this->connection->prepare($statement);
+    $preparedStatement->execute([$userId, $limit[0], $limit[1]]);
+    $data = $preparedStatement->fetchAll(PDO::FETCH_ASSOC);
+    return $data;
+  }
+
   public function findByTopicIds(array $topicIds, array $limit): array {
       $arrIdsLength = count($topicIds);
       $placeholders = array_fill(0, $arrIdsLength, "?");
