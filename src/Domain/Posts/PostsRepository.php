@@ -12,4 +12,5 @@ interface PostsRepository {
   public function findStatsByPostIds(array $postIds): array;
   public function findMediaByPostIds(array $postIds): array;
   public function findRepliesByPostIds(array $postIds, array $limit): array;
+  public function findTrendingPosts(array $limit): array;
 }

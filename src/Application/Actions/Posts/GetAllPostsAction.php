@@ -27,6 +27,10 @@ class GetAllPostsAction extends PostsAction {
       if (count($topicsData)) {
         $topicIds = array_column($topicsData, "id");
         $posts = $this->postsRepository->findByTopicIds($topicIds, $limitParam);
+
+        if (!$posts) {
+          return $this->respondWithData([]);
+        }
       } else {
         $posts = $this->postsRepository->findAll($limitParam);
       }

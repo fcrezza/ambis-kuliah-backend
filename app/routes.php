@@ -2,22 +2,23 @@
 declare(strict_types=1);
 
 use Slim\App;
+use Slim\Exception\HttpNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
-use Slim\Exception\HttpNotFoundException;
 
-use App\Application\Middleware\JWTMiddleware;
 use App\Application\Actions\Auth\LoginAction;
-use App\Application\Actions\Auth\SignupAction;
+use App\Application\Middleware\JWTMiddleware;
 use App\Application\Actions\Auth\LogoutAction;
+use App\Application\Actions\Auth\SignupAction;
 use App\Application\Actions\Auth\GetUserAction;
 use App\Application\Actions\Auth\UpdateUserAction;
-use App\Application\Actions\Posts\GetAllPostsAction;
-use App\Application\Actions\Posts\GetUserPostsAction;
-use App\Application\Actions\Posts\GetUserPostAction;
-use App\Application\Actions\Posts\GetUserPostRepliesAction;
 use App\Application\Actions\Topics\GetTopicsAction;
+use App\Application\Actions\Posts\GetAllPostsAction;
+use App\Application\Actions\Posts\GetUserPostAction;
+use App\Application\Actions\Posts\GetUserPostsAction;
+use App\Application\Actions\Posts\GetUserPostRepliesAction;
+use App\Application\Actions\Posts\GetHotPostsAction;
 use App\Application\Actions\User\GetUserAction as GetUserProfileAction;
 
 return function (App $app) {
@@ -29,7 +30,7 @@ return function (App $app) {
   $app->group('/auth', function (Group $group) {
     $group->post('/login', LoginAction::class);
     $group->post('/signup', SignupAction::class);
-    $group->get('/logout', LogoutAction::class);
+    $group->delete('/logout', LogoutAction::class);
     $group->get('/user', GetUserAction::class)->add(JWTMiddleWare::class);
     $group->put('/user', UpdateUserAction::class)->add(JWTMiddleWare::class);
   });
@@ -44,9 +45,11 @@ return function (App $app) {
     $group->get('/{username}/{postId}/replies', GetUserPostRepliesAction::class)->add(JWTMiddleWare::class);
   });
 
+  $app->get('/hotposts', GetHotPostsAction::class);
+
   $app->get('/users/{username}', GetUserProfileAction::class);
 
-  $app->get('/topics', GetTopicsAction::class)->add(JWTMiddleWare::class);
+  $app->get('/topics', GetTopicsAction::class);
 
   /**
    * Catch-all route to serve a 404 Not Found page if none of the routes match

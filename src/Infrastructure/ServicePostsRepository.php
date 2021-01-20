@@ -24,7 +24,7 @@ class ServicePostsRepository implements PostsRepository {
 
   public function findAll(array $limit): array {
     $this->connection->setAttribute( PDO::ATTR_EMULATE_PREPARES, false );
-    $statement = "select posts.* from posts limit ?, ?";
+    $statement = "select posts.* from posts where repliedPostId is null limit ?, ?";
     $preparedStatement = $this->connection->prepare($statement);
     $preparedStatement->execute($limit);
     $data = $preparedStatement->fetchAll(PDO::FETCH_ASSOC);
@@ -110,4 +110,15 @@ class ServicePostsRepository implements PostsRepository {
     $data = $preparedStatement->fetchAll(PDO::FETCH_ASSOC);
     return $data;
   }
+
+  public function findTrendingPosts($limit): array {
+    $statement = "select posts.* from posts where posts.timestamp between (now() - interval 7 day) and now() limit ?, ?";
+    $this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+    $preparedStatement = $this->connection->prepare($statement);
+    $preparedStatement->execute($limit);
+    $data = $preparedStatement->fetchAll(PDO::FETCH_ASSOC);
+
+    return $data;
+  }
+
 }

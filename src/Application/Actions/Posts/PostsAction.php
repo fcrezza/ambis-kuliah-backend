@@ -38,7 +38,7 @@ abstract class PostsAction extends Action {
         return $post["userId"] === $postAuthor["id"];
       });
 
-      return $author[0];
+      return array_values($author)[0];
     }
 
     protected function constructPostStats(array $post, array $postStats, array $postReplies) {
