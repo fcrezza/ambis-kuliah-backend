@@ -23,7 +23,7 @@ class GetUserAction extends Action {
       $userId = $this->request->getAttribute("userId");
 
       if (!$userId) {
-        return $this->respondWithData(["message" => "Operasi memerlukan authentikasi!"], 401);
+        return $this->respondWithData((object)[]);
       }
 
       $userData = $this->userRepository->getUserById((int) $userId);

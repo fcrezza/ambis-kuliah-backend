@@ -33,8 +33,18 @@ class GetUserPostAction extends PostsAction {
       $postDetail["author"] = $user;
       $postDetail["stats"] = $this->constructPostStats($post, $postStats, $postReplies);
       $postDetail["media"] = $this->constructPostMedia($post, $postMedia);
-      $userId = intval($this->request->getAttribute("userId"));
+      $postDetail["replyTo"] = null;
+
+      if ($post["repliedPostId"]) {
+        $postDetail["replyTo"] = $this->postsRepository->findOneByPostId(intval($post["repliedPostId"]));
+        $postDetail["replyTo"]["author"] = $this->userRepository->getUserById(intval($postDetail["replyTo"]["userId"]));
+        unset($postDetail["replyTo"]["userId"]);
+        unset($postDetail["replyTo"]["repliedPostId"]);
+        unset($postDetail["replyTo"]["author"]["createdAt"]);
+      }
       unset($post["userId"]);
+      unset($post["repliedPostId"]);
+      $userId = intval($this->request->getAttribute("userId"));
 
       if ($userId) {
         $postDetail["feedback"] = $this->constructFeedback($post, $postStats, $userId);

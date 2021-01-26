@@ -13,4 +13,7 @@ interface PostsRepository {
   public function findMediaByPostIds(array $postIds): array;
   public function findRepliesByPostIds(array $postIds, array $limit): array;
   public function findTrendingPosts(array $limit): array;
+  public function findRepliesByUserId(int $userId, array $limit): array;
+  public function insertPostReaction(int $postId, int $userId, int $reaction): bool;
+  public function deletePostReaction(int $postId, int $userId, int $reaction): bool;
 }

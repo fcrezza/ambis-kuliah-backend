@@ -33,7 +33,7 @@ class ServicePostsRepository implements PostsRepository {
 
   public function findByUserId(int $userId, array $limit): array {
     $this->connection->setAttribute( PDO::ATTR_EMULATE_PREPARES, false );
-    $statement = "select posts.* from posts where userId=? limit ?, ?";
+    $statement = "select posts.* from posts where userId=? and repliedPostId is null limit ?, ?";
     $preparedStatement = $this->connection->prepare($statement);
     $preparedStatement->execute([$userId, $limit[0], $limit[1]]);
     $data = $preparedStatement->fetchAll(PDO::FETCH_ASSOC);
@@ -121,4 +121,26 @@ class ServicePostsRepository implements PostsRepository {
     return $data;
   }
 
+  public function findRepliesByUserId(int $userId, array $limit): array {
+    $statement = "select posts.* from posts where posts.userId = ? and repliedPostId is not null limit ?, ?";
+    $this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+    $preparedStatement = $this->connection->prepare($statement);
+    $preparedStatement->execute(array_merge([$userId], $limit));
+    $data = $preparedStatement->fetchAll(PDO::FETCH_ASSOC);
+    return $data;
+  }
+
+  public function insertPostReaction(int $postId, int $userId, int $reaction): bool  {
+    $statement = "insert into poststats (postId, userId, type) values (?, ?, ?)";
+    $preparedStatement = $this->connection->prepare($statement);
+    $preparedStatement->execute([$postId, $userId, $reaction]);
+    return true;
+  }
+
+  public function deletePostReaction(int $postId, int $userId, int $reaction): bool  {
+    $statement = "delete from poststats where postId = ? and userId = ?and type = ?";
+    $preparedStatement = $this->connection->prepare($statement);
+    $preparedStatement->execute([$postId, $userId, $reaction]);
+    return true;
+  }
 }

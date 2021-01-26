@@ -25,6 +25,12 @@ class GetUserPostsAction extends PostsAction {
       }
 
       $posts = $this->postsRepository->findByUserId(intval($user["id"]), $limitParam);
+
+      // return empty array when user dont have posts or when there are no post available to get (ie. usage with limit)
+      if (!count($posts)) {
+        return $this->respondWithData([]);
+      }
+
       $postIds = array_column($posts, "id");
       $postTopics = $this->postsRepository->findTopicsByPostIds($postIds);
       $postStats = $this->postsRepository->findStatsByPostIds($postIds);

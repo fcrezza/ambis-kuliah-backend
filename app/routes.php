@@ -3,22 +3,28 @@ declare(strict_types=1);
 
 use Slim\App;
 use Slim\Exception\HttpNotFoundException;
-use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
-
+use App\Application\Actions\Posts\GetAllPostsAction;
 use App\Application\Actions\Auth\LoginAction;
 use App\Application\Middleware\JWTMiddleware;
 use App\Application\Actions\Auth\LogoutAction;
+
 use App\Application\Actions\Auth\SignupAction;
 use App\Application\Actions\Auth\GetUserAction;
 use App\Application\Actions\Auth\UpdateUserAction;
 use App\Application\Actions\Topics\GetTopicsAction;
-use App\Application\Actions\Posts\GetAllPostsAction;
+use Psr\Http\Message\ResponseInterface as Response;
+use App\Application\Actions\Posts\GetHotPostsAction;
 use App\Application\Actions\Posts\GetUserPostAction;
 use App\Application\Actions\Posts\GetUserPostsAction;
+use App\Application\Actions\Posts\PostUserPostAction;
+use App\Application\Actions\Posts\GetUserRepliesAction;
+use App\Application\Actions\Posts\PostUpvotesPostAction;
+use App\Application\Actions\Posts\PostDownvotesPostAction;
+use App\Application\Actions\Posts\DeleteUpvotePostAction;
+use App\Application\Actions\Posts\DeleteDownvotePostAction;
 use App\Application\Actions\Posts\GetUserPostRepliesAction;
-use App\Application\Actions\Posts\GetHotPostsAction;
 use App\Application\Actions\User\GetUserAction as GetUserProfileAction;
 
 return function (App $app) {
@@ -38,9 +44,13 @@ return function (App $app) {
   $app->group('/posts', function (Group $group) {
     $group->get('', GetAllPostsAction::class)->add(JWTMiddleWare::class);
     $group->get('/{username}', GetUserPostsAction::class)->add(JWTMiddleWare::class);
+    $group->get('/{username}/replies', GetUserRepliesAction::class)->add(JWTMiddleWare::class);
     // $group->post('/{username}', PostUserPostAction::class)->add(JWTMiddleWare::class);
     $group->get('/{username}/{postId}', GetUserPostAction::class)->add(JWTMiddleWare::class);
-    // $group->post('/{username}/{postId}', SignupAction::class)->add(JWTMiddleWare::class);
+    $group->post('/{username}/{postId}/upvotes', PostUpvotesPostAction::class)->add(JWTMiddleWare::class);
+    $group->delete('/{username}/{postId}/upvotes/{idUser}', DeleteUpvotePostAction::class)->add(JWTMiddleWare::class);
+    $group->post('/{username}/{postId}/downvotes', PostDownvotesPostAction::class)->add(JWTMiddleWare::class);
+    $group->delete('/{username}/{postId}/downvotes/{idUser}', DeleteDownvotePostAction::class)->add(JWTMiddleWare::class);
     // $group->delete('/{username}/{postId}', SignupAction::class)->add(JWTMiddleWare::class);
     $group->get('/{username}/{postId}/replies', GetUserPostRepliesAction::class)->add(JWTMiddleWare::class);
   });
