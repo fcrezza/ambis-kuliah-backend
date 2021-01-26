@@ -47,10 +47,10 @@ return function (App $app) {
     $group->get('/{username}/replies', GetUserRepliesAction::class)->add(JWTMiddleWare::class);
     // $group->post('/{username}', PostUserPostAction::class)->add(JWTMiddleWare::class);
     $group->get('/{username}/{postId}', GetUserPostAction::class)->add(JWTMiddleWare::class);
-    $group->post('/{username}/{postId}/upvotes', PostUpvotesPostAction::class)->add(JWTMiddleWare::class);
-    $group->delete('/{username}/{postId}/upvotes/{idUser}', DeleteUpvotePostAction::class)->add(JWTMiddleWare::class);
-    $group->post('/{username}/{postId}/downvotes', PostDownvotesPostAction::class)->add(JWTMiddleWare::class);
-    $group->delete('/{username}/{postId}/downvotes/{idUser}', DeleteDownvotePostAction::class)->add(JWTMiddleWare::class);
+    $group->post('/{postId}/upvotes', PostUpvotesPostAction::class)->add(JWTMiddleWare::class);
+    $group->delete('/{postId}/upvotes/{idUser}', DeleteUpvotePostAction::class)->add(JWTMiddleWare::class);
+    $group->post('/{postId}/downvotes', PostDownvotesPostAction::class)->add(JWTMiddleWare::class);
+    $group->delete('/{postId}/downvotes/{idUser}', DeleteDownvotePostAction::class)->add(JWTMiddleWare::class);
     // $group->delete('/{username}/{postId}', SignupAction::class)->add(JWTMiddleWare::class);
     $group->get('/{username}/{postId}/replies', GetUserPostRepliesAction::class)->add(JWTMiddleWare::class);
   });
