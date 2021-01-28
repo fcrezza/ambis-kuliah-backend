@@ -12,4 +12,5 @@ interface UserRepository {
   public function updateUserTopics(int $userId, array $addedTopics, array $deletedTopics);
   public function insertUser(array $data);
   public function findByIds(array $ids): array;
+  public function updateProfile(int $id, object $data);
 }

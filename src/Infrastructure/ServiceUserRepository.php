@@ -99,4 +99,9 @@ class ServiceUserRepository implements UserRepository {
       throw $error;
     }
   }
+  public function updateProfile(int $id, object $data) {
+    $query = $this->connection->prepare("update users set username = ?, fullname = ?, email = ?, bio = ? where users.id = ?");
+    $query->execute([$data->username, $data->fullname, $data->email, $data->bio, $id]);
+  }
 }
+

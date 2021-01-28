@@ -26,6 +26,7 @@ use App\Application\Actions\Posts\DeleteUpvotePostAction;
 use App\Application\Actions\Posts\DeleteDownvotePostAction;
 use App\Application\Actions\Posts\GetUserPostRepliesAction;
 use App\Application\Actions\User\GetUserAction as GetUserProfileAction;
+use App\Application\Actions\User\PutUserProfileAction;
 
 return function (App $app) {
   $app->options('/{routes:.*}', function (Request $request, Response $response) {
@@ -58,6 +59,7 @@ return function (App $app) {
   $app->get('/hotposts', GetHotPostsAction::class);
 
   $app->get('/users/{username}', GetUserProfileAction::class);
+  $app->put('/users/{username}/profile', PutUserProfileAction::class)->add(JWTMiddleWare::class);;
 
   $app->get('/topics', GetTopicsAction::class);
 
