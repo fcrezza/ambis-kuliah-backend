@@ -31,14 +31,19 @@ class GetUserRepliesAction extends PostsAction {
         return $this->respondWithData([]);
       }
 
+      $userAvatar = $this->userRepository->getAvatarByUserId(intval($user["id"]));
+      unset($userAvatar["userId"]);
+      unset($userAvatar["publicId"]);
       $postIds = array_column($posts, "id");
       $postStats = $this->postsRepository->findStatsByPostIds($postIds);
       $postReplies = $this->postsRepository->findRepliesByPostIds($postIds);
-      $postMedia = $this->postsRepository->findMediaByPostIds($postIds);
-      $responseBody = array_map(function($post) use ($user, $postStats, $postReplies, $postMedia) {
-        $post["author"] = $user;
+      $postImages = array_map(function($id) {
+        return $this->postsRepository->findImageByPostId($id);
+      }, $postIds);
+      $responseBody = array_map(function($post) use ($user, $userAvatar, $postStats, $postReplies, $postImages) {
+        $post["author"] = array_merge($user, ["avatar" => $userAvatar]);
         $post["stats"] = $this->constructPostStats($post, $postStats, $postReplies);
-        $post["media"] = $this->constructPostMedia($post, $postMedia);
+        $post["images"] = $this->constructPostImage($post, $postImages);
         $post["replyTo"] = $this->postsRepository->findOneByPostId(intval($post["repliedPostId"]));
         $post["replyTo"]["author"] = $this->userRepository->getUserById(intval($post["replyTo"]["userId"]));
         unset($post["replyTo"]["userId"]);

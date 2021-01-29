@@ -56,9 +56,13 @@ abstract class PostsAction extends Action {
       return $stats;
     }
 
-    protected function constructPostMedia(array $post, array $postMedia) {
-      $media = array_filter($postMedia, function($media) use ($post) {
-        return $media["postId"] === $post["id"];
+    protected function constructPostImage(array $post, array $postImages) {
+      $media = array_filter($postImages, function($image) use ($post) {
+        if (empty($image)) {
+          return;
+        }
+
+        return $image["postId"] === $post["id"];
       });
 
       return $media;

@@ -31,16 +31,21 @@ class GetUserPostsAction extends PostsAction {
         return $this->respondWithData([]);
       }
 
+      $userAvatar = $this->userRepository->getAvatarByUserId(intval($user["id"]));
+      unset($userAvatar["userId"]);
+      unset($userAvatar["publicId"]);
       $postIds = array_column($posts, "id");
       $postTopics = $this->postsRepository->findTopicsByPostIds($postIds);
       $postStats = $this->postsRepository->findStatsByPostIds($postIds);
       $postReplies = $this->postsRepository->findRepliesByPostIds($postIds);
-      $postMedia = $this->postsRepository->findMediaByPostIds($postIds);
-      $responseBody = array_map(function($post) use ($postTopics, $user, $postStats, $postReplies, $postMedia) {
+      $postImages = array_map(function($id) {
+        return $this->postsRepository->findImageByPostId($id);
+      }, $postIds);
+      $responseBody = array_map(function($post) use ($postTopics, $user, $userAvatar, $postStats, $postReplies, $postImages) {
         $post["topics"] = $this->constructPostTopics($post, $postTopics);
-        $post["author"] = $user;
+        $post["author"] = array_merge($user, ["avatar" => $userAvatar]);
         $post["stats"] = $this->constructPostStats($post, $postStats, $postReplies);
-        $post["media"] = $this->constructPostMedia($post, $postMedia);
+        $post["images"] = $this->constructPostImage($post, $postImages);
         $userId = intval($this->request->getAttribute("userId"));
         unset($post["userId"]);
 

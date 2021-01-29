@@ -39,13 +39,26 @@ class SignupAction extends Action {
       }
 
       $hashedPassword = password_hash($input->password, PASSWORD_DEFAULT);
-      $responseBody = $this->userRepository->insertUser([
+      $user = $this->userRepository->insertUser([
         "username" => $input->username,
         "fullname" => $input->fullname,
         "email" => $input->email,
         "password" => $hashedPassword,
-        "avatarUrl" => $input->avatarUrl,
       ]);
+      $avatarPayload = [
+        "avatar" => [
+          "publicId" => null,
+          "url" => $input->avatarUrl,
+        ],
+        "user" => [
+          "id" => intval($user["id"])
+        ]
+      ];
+      $this->userRepository->insertAvatar($avatarPayload);
+      $userAvatar = $this->userRepository->getAvatarByUserId(intval($user["id"]));
+      unset($userAvatar["userId"]);
+      unset($userAvatar["publicId"]);
+      $responseBody = array_merge($user, ["avatar" => $userAvatar]);
 
       $accessToken = $this->token->createToken("access token", ["id" => $responseBody["id"]]);
       $refreshToken = $this->token->createToken("refresh token", ["id" => $responseBody["id"]]);

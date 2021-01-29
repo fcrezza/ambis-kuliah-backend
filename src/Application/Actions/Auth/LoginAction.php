@@ -40,7 +40,13 @@ class LoginAction extends Action {
       }
 
       $userTopics = $this->userRepository->getUserTopics((int)$userData["id"]);
-      $responseBody = array_merge($userData, ["topics" => $userTopics]);
+      $userAvatar = $this->userRepository->getAvatarByUserId((int)$userData["id"]);
+      unset($userAvatar["userId"]);
+      unset($userAvatar["publicId"]);
+      $responseBody = array_merge($userData, [
+        "topics" => $userTopics,
+        "avatar" => $userAvatar
+      ]);
       $accessToken = $this->token->createToken("access token", ["id" => $userData["id"]]);
       $refreshToken = $this->token->createToken("refresh token", ["id" => $userData["id"]]);
       $this->token->sendToken("accessToken", $accessToken);

@@ -74,15 +74,12 @@ class ServicePostsRepository implements PostsRepository {
     return $data;
   }
 
-    public function findMediaByPostIds(array $postIds): array {
-    $arrIdsLength = count($postIds);
-    $placeholders = array_fill(0, $arrIdsLength, "?");
-    $placeholders = join(",", $placeholders);
-    $statement = "select postmedia.* from postmedia where postmedia.postId in ($placeholders)";
+    public function findImageByPostId(int $postId): array {
+    $statement = "select postimages.* from postimages where postimages.postId = ?";
     $preparedStatement = $this->connection->prepare($statement);
-    $preparedStatement->execute($postIds);
-    $data = $preparedStatement->fetchAll(PDO::FETCH_ASSOC);
-    return $data;
+    $preparedStatement->execute([$postId]);
+    $data = $preparedStatement->fetch(PDO::FETCH_ASSOC);
+    return is_array($data) ? $data : [];
   }
 
   public function findRepliesByPostIds(array $postIds, array $limit = []): array {

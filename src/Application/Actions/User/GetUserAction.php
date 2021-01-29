@@ -25,8 +25,12 @@ class GetUserAction extends Action {
       return $this->respondWithData(["message" => "data tidak ditemukan"], 404);
     }
 
+    $userAvatar = $this->userRepository->getAvatarByUserId(intval($userData["id"]));
+    unset($userAvatar["publicId"]);
+    unset($userAvatar["userId"]);
     unset($userData["createdAt"]);
+    $responseBody = array_merge($userData, ["avatar" => $userAvatar]);
     $this->logger->info("hit user Profile route!");
-    return $this->respondWithData($userData);
+    return $this->respondWithData($responseBody);
   }
 }

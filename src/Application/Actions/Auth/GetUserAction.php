@@ -26,9 +26,15 @@ class GetUserAction extends Action {
         return $this->respondWithData((object)[]);
       }
 
-      $userData = $this->userRepository->getUserById((int) $userId);
-      $userTopics = $this->userRepository->getUserTopics((int) $userId);
-      $responseBody = array_merge($userData, ["topics" => $userTopics]);
+      $userData = $this->userRepository->getUserById($userId);
+      $userTopics = $this->userRepository->getUserTopics($userId);
+      $userAvatar = $this->userRepository->getAvatarByUserId($userId);
+      unset($userAvatar["userId"]);
+      unset($userAvatar["publicId"]);
+      $responseBody = array_merge($userData, [
+        "avatar" => $userAvatar,
+        "topics" => $userTopics
+      ]);
       return $this->respondWithData($responseBody);
     }
 }

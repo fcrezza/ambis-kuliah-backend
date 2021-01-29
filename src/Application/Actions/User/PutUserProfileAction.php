@@ -51,7 +51,6 @@ class PutUserProfileAction extends Action {
       return $this->respondWithData(["message" => "Email ini sudah digunakan akun lain"], 403);
     }
 
-    // Uploader::upload($input->image)
 
     $this->userRepository->updateProfile($userId, $input);
     // get new data from db

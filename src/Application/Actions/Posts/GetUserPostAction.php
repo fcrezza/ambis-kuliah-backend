@@ -24,15 +24,18 @@ class GetUserPostAction extends PostsAction {
       }
 
       $postId = $post["id"];
+      $userAvatar = $this->userRepository->getAvatarByUserId(intval($user["id"]));
+      unset($userAvatar["publicId"]);
+      unset($userAvatar["userId"]);
       $postTopics = $this->postsRepository->findTopicsByPostIds([$postId]);
       $postStats = $this->postsRepository->findStatsByPostIds([$postId]);
       $postReplies = $this->postsRepository->findRepliesByPostIds([$postId]);
-      $postMedia = $this->postsRepository->findMediaByPostIds([$postId]);
+      $postImages = $this->postsRepository->findImageByPostId(intval($postId));
       $postDetail = [];
       $postDetail["topics"] = $this->constructPostTopics($post, $postTopics);
-      $postDetail["author"] = $user;
+      $postDetail["author"] = array_merge($user, ["avatar" => $userAvatar]);
       $postDetail["stats"] = $this->constructPostStats($post, $postStats, $postReplies);
-      $postDetail["media"] = $this->constructPostMedia($post, $postMedia);
+      $postDetail["images"] = $this->constructPostImage($post, $postImages);
       $postDetail["replyTo"] = null;
 
       if ($post["repliedPostId"]) {

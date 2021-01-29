@@ -28,7 +28,7 @@ class JWTMiddleWare {
         }
 
         if ($validAccessToken) {
-            $request = $request->withAttribute("userId", $validAccessToken->data->id);
+            $request = $request->withAttribute("userId", intval($validAccessToken->data->id));
             $response = $handler->handle($request);
             return $response;
         }
@@ -38,7 +38,7 @@ class JWTMiddleWare {
             $refreshToken = $this->token->createToken("refresh token", (array)$validRefreshToken->data);
             $this->token->sendToken("accessToken", $accessToken);
             $this->token->sendToken("refreshToken", $refreshToken);
-            $request = $request->withAttribute("userId", $validRefreshToken->data->id);
+            $request = $request->withAttribute("userId", intval($validRefreshToken->data->id));
             $response = $handler->handle($request);
             return $response;
         }

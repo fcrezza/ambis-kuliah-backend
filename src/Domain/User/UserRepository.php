@@ -13,4 +13,7 @@ interface UserRepository {
   public function insertUser(array $data);
   public function findByIds(array $ids): array;
   public function updateProfile(int $id, object $data);
+  public function getAvatarByUserId(int $userId): array;
+  public function updateAvatar(array $payload);
+  public function insertAvatar(array $payload);
 }
