@@ -17,6 +17,7 @@ use App\Application\Actions\Topics\GetTopicsAction;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Application\Actions\Posts\GetHotPostsAction;
 use App\Application\Actions\Posts\GetUserPostAction;
+use App\Application\Actions\Posts\DeleteUserPostAction;
 use App\Application\Actions\Posts\GetUserPostsAction;
 use App\Application\Actions\Posts\PostUserPostAction;
 use App\Application\Actions\Posts\GetUserRepliesAction;
@@ -53,7 +54,7 @@ return function (App $app) {
     $group->delete('/{postId}/upvotes/{idUser}', DeleteUpvotePostAction::class)->add(JWTMiddleWare::class);
     $group->post('/{postId}/downvotes', PostDownvotesPostAction::class)->add(JWTMiddleWare::class);
     $group->delete('/{postId}/downvotes/{idUser}', DeleteDownvotePostAction::class)->add(JWTMiddleWare::class);
-    // $group->delete('/{username}/{postId}', SignupAction::class)->add(JWTMiddleWare::class);
+    $group->delete('/{authorUsername}/{postId}', DeleteUserPostAction::class)->add(JWTMiddleWare::class);
     $group->get('/{username}/{postId}/replies', GetUserPostRepliesAction::class)->add(JWTMiddleWare::class);
   });
 
@@ -69,6 +70,7 @@ return function (App $app) {
    * Catch-all route to serve a 404 Not Found page if none of the routes match
    * NOTE: make sure this route is defined last
    */
+
   $app->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {
     throw new HttpNotFoundException($request);
   });

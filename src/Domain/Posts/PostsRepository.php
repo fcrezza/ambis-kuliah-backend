@@ -16,4 +16,5 @@ interface PostsRepository {
   public function findImageByPostId(int $postId): array;
   public function insertPostReaction(int $postId, int $userId, int $reaction): bool;
   public function deletePostReaction(int $postId, int $userId, int $reaction): bool;
+  public function deletePost(int $postId);
 }

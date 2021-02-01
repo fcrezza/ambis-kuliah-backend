@@ -140,4 +140,26 @@ class ServicePostsRepository implements PostsRepository {
     $preparedStatement->execute([$postId, $userId, $reaction]);
     return true;
   }
+
+  public function deletePost(int $postId) {
+    $this->connection->beginTransaction();
+    try {
+      $statement = "delete from poststats where postId = ?";
+      $query = $this->connection->prepare($statement);
+      $query->execute([$postId]);
+      $statement = "delete from postimages where postId = ?";
+      $query = $this->connection->prepare($statement);
+      $query->execute([$postId]);
+      $statement = "delete from posttopics where postId = ?";
+      $query = $this->connection->prepare($statement);
+      $query->execute([$postId]);
+      $statement = "delete from posts where id = ?";
+      $query = $this->connection->prepare($statement);
+      $query->execute([$postId]);
+      $this->connection->commit();
+    } catch (PDOException $error) {
+      $this->connection->rollback();
+      throw $error;
+    }
+  }
 }
