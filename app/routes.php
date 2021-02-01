@@ -5,16 +5,15 @@ use Slim\App;
 use Slim\Exception\HttpNotFoundException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
+use Psr\Http\Message\ResponseInterface as Response;
 use App\Application\Actions\Posts\GetAllPostsAction;
 use App\Application\Actions\Auth\LoginAction;
 use App\Application\Middleware\JWTMiddleware;
 use App\Application\Actions\Auth\LogoutAction;
-
 use App\Application\Actions\Auth\SignupAction;
 use App\Application\Actions\Auth\GetUserAction;
 use App\Application\Actions\Auth\UpdateUserAction;
 use App\Application\Actions\Topics\GetTopicsAction;
-use Psr\Http\Message\ResponseInterface as Response;
 use App\Application\Actions\Posts\GetHotPostsAction;
 use App\Application\Actions\Posts\GetUserPostAction;
 use App\Application\Actions\Posts\DeleteUserPostAction;
@@ -48,7 +47,7 @@ return function (App $app) {
     $group->get('', GetAllPostsAction::class)->add(JWTMiddleWare::class);
     $group->get('/{username}', GetUserPostsAction::class)->add(JWTMiddleWare::class);
     $group->get('/{username}/replies', GetUserRepliesAction::class)->add(JWTMiddleWare::class);
-    // $group->post('/{username}', PostUserPostAction::class)->add(JWTMiddleWare::class);
+    $group->post('/{username}', PostUserPostAction::class)->add(JWTMiddleWare::class);
     $group->get('/{username}/{postId}', GetUserPostAction::class)->add(JWTMiddleWare::class);
     $group->post('/{postId}/upvotes', PostUpvotesPostAction::class)->add(JWTMiddleWare::class);
     $group->delete('/{postId}/upvotes/{idUser}', DeleteUpvotePostAction::class)->add(JWTMiddleWare::class);
@@ -61,8 +60,9 @@ return function (App $app) {
   $app->get('/hotposts', GetHotPostsAction::class);
 
   $app->get('/users/{username}', GetUserProfileAction::class);
-  $app->put('/users/{username}/profile', PutUserProfileAction::class)->add(JWTMiddleWare::class);;
-  $app->post('/users/{username}/avatar', PutUserAvatarAction::class)->add(JWTMiddleWare::class);;
+  $app->put('/users/{username}/profile', PutUserProfileAction::class)->add(JWTMiddleWare::class);
+
+  $app->post('/users/{username}/avatar', PutUserAvatarAction::class)->add(JWTMiddleWare::class);
 
   $app->get('/topics', GetTopicsAction::class);
 

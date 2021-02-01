@@ -8,42 +8,42 @@ use Psr\Log\LoggerInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Processor\UidProcessor;
 use Psr\Container\ContainerInterface;
-
 use App\Domain\Token\Token;
 use App\Infrastructure\ServiceToken;
 
 return function (ContainerBuilder $containerBuilder) {
-    $containerBuilder->addDefinitions([
-        LoggerInterface::class => function (ContainerInterface $container) {
-            $settings = $container->get('settings');
+  $containerBuilder->addDefinitions([
+    LoggerInterface::class => function (ContainerInterface $container) {
+      $settings = $container->get('settings');
 
-            $loggerSettings = $settings['logger'];
-            $logger = new Logger($loggerSettings['name']);
+      $loggerSettings = $settings['logger'];
+      $logger = new Logger($loggerSettings['name']);
 
-            $processor = new UidProcessor();
-            $logger->pushProcessor($processor);
+      $processor = new UidProcessor();
+      $logger->pushProcessor($processor);
 
-            $handler = new StreamHandler($loggerSettings['path'], $loggerSettings['level']);
-            $logger->pushHandler($handler);
+      $handler = new StreamHandler($loggerSettings['path'], $loggerSettings['level']);
+      $logger->pushHandler($handler);
 
-            return $logger;
-        },
-        PDO::class => function(ContainerInterface $container) {
-            $settings = $container->get("settings");
-            $database = $settings["database"];
-            $host = $database["host"];
-            $name = $database["name"];
-            $username = $database["username"];
-            $password = $database["password"];
+      return $logger;
+    },
+    PDO::class => function (ContainerInterface $container) {
+      $settings = $container->get("settings");
+      $database = $settings["database"];
+      $host = $database["host"];
+      $name = $database["name"];
+      $username = $database["username"];
+      $password = $database["password"];
 
-            try {
-                $conn = new PDO("mysql:host=$host;dbname=$name", $username, $password);
-                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                return $conn;
-            } catch(PDOException $e) {
-                throw $e;
-             }
-        },
-        Token::class => \DI\autowire(ServiceToken::class)
-    ]);
+      try {
+        $conn = new PDO("mysql:host=$host;dbname=$name", $username, $password);
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        return $conn;
+      } catch (PDOException $e) {
+        throw $e;
+      }
+    },
+    Token::class => \DI\autowire(ServiceToken::class)
+  ]);
 };
