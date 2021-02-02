@@ -23,7 +23,6 @@ class PostUserPostAction extends PostsAction {
 
     $gump->validation_rules([
       "title" => ["required", "alpha_numeric_space"],
-      "description" => ["alpha_numeric_space"],
       "topics" => ["required", "valid_array_size_greater" => 1, "valid_array_size_lesser" => 3],
       "topics.*" => ["integer"],
       "image" => ["extension" => "png;jpg;jpeg;gif"],

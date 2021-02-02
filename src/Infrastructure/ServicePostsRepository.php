@@ -202,4 +202,25 @@ class ServicePostsRepository implements PostsRepository {
       throw $error;
     }
   }
+
+  public function insertPostReply(array $payload) {
+    $this->connection->beginTransaction();
+    try {
+      $statement = "insert posts (userId, contents, repliedPostId) values (?, ?, ?)";
+      $query = $this->connection->prepare($statement);
+      $query->execute([$payload["user"]["id"], $payload["post"]["description"], $payload["post"]["id"]]);
+      $postId = $lastInsertId = $this->connection->lastInsertId();
+
+      if (isset($payload["post"]["image"])) {
+        $statement = "insert postimages (postId, publicId, url) values (?, ?, ?)";
+        $query = $this->connection->prepare($statement);
+        $query->execute([$postId, $payload["post"]["image"]["publicId"], $payload["post"]["image"]["url"]]);
+      }
+
+      $this->connection->commit();
+    } catch (PDOException $error) {
+      $this->connection->rollback();
+      throw $error;
+    }
+  }
 }

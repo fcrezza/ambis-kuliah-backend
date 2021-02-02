@@ -20,6 +20,7 @@ use App\Application\Actions\Posts\DeleteUserPostAction;
 use App\Application\Actions\Posts\GetUserPostsAction;
 use App\Application\Actions\Posts\PostUserPostAction;
 use App\Application\Actions\Posts\GetUserRepliesAction;
+use App\Application\Actions\Posts\InsertPostReplyAction;
 use App\Application\Actions\Posts\PostUpvotesPostAction;
 use App\Application\Actions\Posts\PostDownvotesPostAction;
 use App\Application\Actions\Posts\DeleteUpvotePostAction;
@@ -55,6 +56,7 @@ return function (App $app) {
     $group->delete('/{postId}/downvotes/{idUser}', DeleteDownvotePostAction::class)->add(JWTMiddleWare::class);
     $group->delete('/{authorUsername}/{postId}', DeleteUserPostAction::class)->add(JWTMiddleWare::class);
     $group->get('/{username}/{postId}/replies', GetUserPostRepliesAction::class)->add(JWTMiddleWare::class);
+    $group->post('/{authorUsername}/{postId}/replies', InsertPostReplyAction::class)->add(JWTMiddleWare::class);
   });
 
   $app->get('/hotposts', GetHotPostsAction::class);

@@ -31,4 +31,6 @@ interface PostsRepository {
   public function deletePost(int $postId);
 
   public function insertPost(array $payload);
+
+  public function insertPostReply(array $payload);
 }
