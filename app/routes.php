@@ -47,7 +47,7 @@ return function (App $app) {
     $group->get('', GetAllPostsAction::class)->add(JWTMiddleWare::class);
     $group->get('/{username}', GetUserPostsAction::class)->add(JWTMiddleWare::class);
     $group->get('/{username}/replies', GetUserRepliesAction::class)->add(JWTMiddleWare::class);
-    $group->post('/{username}', PostUserPostAction::class)->add(JWTMiddleWare::class);
+    $group->post('/{authorUsername}', PostUserPostAction::class)->add(JWTMiddleWare::class);
     $group->get('/{username}/{postId}', GetUserPostAction::class)->add(JWTMiddleWare::class);
     $group->post('/{postId}/upvotes', PostUpvotesPostAction::class)->add(JWTMiddleWare::class);
     $group->delete('/{postId}/upvotes/{idUser}', DeleteUpvotePostAction::class)->add(JWTMiddleWare::class);

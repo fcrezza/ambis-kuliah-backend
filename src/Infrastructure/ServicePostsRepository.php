@@ -172,4 +172,34 @@ class ServicePostsRepository implements PostsRepository {
       throw $error;
     }
   }
+
+  public function insertPost(array $payload) {
+    $this->connection->beginTransaction();
+    try {
+      $statement = "insert posts (userId, title, contents) values (?, ?, ?)";
+      $query = $this->connection->prepare($statement);
+      $query->execute([$payload["user"]["id"], $payload["post"]["title"], isset($payload["post"]["description"]) ? $payload["post"]["description"] : null]);
+      $postId = $lastInsertId = $this->connection->lastInsertId();
+
+      if (isset($payload["post"]["image"])) {
+        $statement = "insert postimages (postId, publicId, url) values (?, ?, ?)";
+        $query = $this->connection->prepare($statement);
+        $query->execute([$postId, $payload["post"]["image"]["publicId"], $payload["post"]["image"]["url"]]);
+      }
+
+      $topicIdsLength = count($payload["post"]["topics"]);
+      $placeholders = array_fill(0, $topicIdsLength, "(?, ?)");
+      $placeholders = join(",", $placeholders);
+      $statement = "insert posttopics (postId, topicId) values $placeholders";
+      $query = $this->connection->prepare($statement);
+      $queryPayload = array_map(function ($topicId) use ($postId) {
+        return [$postId, $topicId];
+      }, $payload["post"]["topics"]);
+      $query->execute(array_merge(...$queryPayload));
+      $this->connection->commit();
+    } catch (PDOException $error) {
+      $this->connection->rollback();
+      throw $error;
+    }
+  }
 }
