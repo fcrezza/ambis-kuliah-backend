@@ -10,6 +10,8 @@ interface PostsRepository {
 
   public function findByTopicIds(array $topicIds, array $limit): array;
 
+  public function findByKeywords(string $keywords, array $limit): array;
+
   public function findByUserId(int $userId, array $limit): array;
 
   public function findTopicsByPostIds(array $postIds): array;

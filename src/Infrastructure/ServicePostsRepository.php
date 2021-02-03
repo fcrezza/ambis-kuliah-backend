@@ -55,6 +55,16 @@ class ServicePostsRepository implements PostsRepository {
     return $data;
   }
 
+  public function findByKeywords(string $keywords, array $limit): array {
+    $this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+    $statement = "select posts.* from posts where title like ? or contents like ? limit ?, ?";
+    $preparedStatement = $this->connection->prepare($statement);
+    $preparedStatement->execute(array_merge(["%$keywords%", "%$keywords%"], $limit));
+    $data = $preparedStatement->fetchAll(PDO::FETCH_ASSOC);
+
+    return $data;
+  }
+
   public function findTopicsByPostIds(array $postIds): array {
     $arrIdsLength = count($postIds);
     $placeholders = array_fill(0, $arrIdsLength, "?");
