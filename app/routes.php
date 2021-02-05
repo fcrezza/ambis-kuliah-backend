@@ -14,7 +14,7 @@ use App\Application\Actions\Auth\SignupAction;
 use App\Application\Actions\Auth\GetUserAction;
 use App\Application\Actions\Auth\UpdateUserAction;
 use App\Application\Actions\Topics\GetTopicsAction;
-use App\Application\Actions\Posts\GetHotPostsAction;
+use App\Application\Actions\Posts\GetTrendingPostsAction;
 use App\Application\Actions\Posts\GetUserPostAction;
 use App\Application\Actions\Posts\DeleteUserPostAction;
 use App\Application\Actions\Posts\GetUserPostsAction;
@@ -45,21 +45,24 @@ return function (App $app) {
   });
 
   $app->group('/posts', function (Group $group) {
+    // this need to change
     $group->get('', GetAllPostsAction::class)->add(JWTMiddleWare::class);
+    $group->get('/trending', GetTrendingPostsAction::class);
+    // this need to change
     $group->get('/{username}', GetUserPostsAction::class)->add(JWTMiddleWare::class);
+    // this need to change
     $group->get('/{username}/replies', GetUserRepliesAction::class)->add(JWTMiddleWare::class);
     $group->post('/{authorUsername}', PostUserPostAction::class)->add(JWTMiddleWare::class);
     $group->get('/{username}/{postId}', GetUserPostAction::class)->add(JWTMiddleWare::class);
+    // this need to change
+    $group->get('/{username}/{postId}/replies', GetUserPostRepliesAction::class)->add(JWTMiddleWare::class);
     $group->post('/{postId}/upvotes', PostUpvotesPostAction::class)->add(JWTMiddleWare::class);
     $group->delete('/{postId}/upvotes/{idUser}', DeleteUpvotePostAction::class)->add(JWTMiddleWare::class);
     $group->post('/{postId}/downvotes', PostDownvotesPostAction::class)->add(JWTMiddleWare::class);
     $group->delete('/{postId}/downvotes/{idUser}', DeleteDownvotePostAction::class)->add(JWTMiddleWare::class);
     $group->delete('/{authorUsername}/{postId}', DeleteUserPostAction::class)->add(JWTMiddleWare::class);
-    $group->get('/{username}/{postId}/replies', GetUserPostRepliesAction::class)->add(JWTMiddleWare::class);
     $group->post('/{authorUsername}/{postId}/replies', InsertPostReplyAction::class)->add(JWTMiddleWare::class);
   });
-
-  $app->get('/hotposts', GetHotPostsAction::class);
 
   $app->get('/users/{username}', GetUserProfileAction::class);
   $app->put('/users/{username}/profile', PutUserProfileAction::class)->add(JWTMiddleWare::class);

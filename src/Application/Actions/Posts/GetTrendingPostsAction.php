@@ -6,33 +6,32 @@ namespace App\Application\Actions\Posts;
 use Psr\Http\Message\ResponseInterface;
 use App\Application\Actions\Posts\PostsAction;
 
-class GetUserPostsAction extends PostsAction {
+class GetTrendingPostsAction extends PostsAction {
   protected function action(): ResponseInterface {
     $params = $this->request->getQueryParams();
-    $limitParam = [0, 20];
+    $limit = [0, 5];
 
     if (isset($params["limit"])) {
       $limitArr = explode(',', $params["limit"]);
-      $limitParam = [(intval($limitArr[0]) - 1), intval($limitArr[1])];
+      $limit = [(intval($limitArr[0]) - 1), intval($limitArr[1])];
     }
 
-    $username = $this->resolveArg("username");
-    $user = $this->userRepository->getUserByUsername($username);
+    $posts = $this->postsRepository->findTrendingPosts($limit);
 
-    if (!$user) {
-      return $this->respondWithData(["message" => "data tidak dapat ditemukan"], 404);
-    }
-
-    $posts = $this->postsRepository->findByUserId(intval($user["id"]), $limitParam);
-
-    // return empty array when user dont have posts or when there are no post available to get (ie. usage with limit)
-    if (!count($posts)) {
+    if (!$posts) {
       return $this->respondWithData([]);
     }
 
-    $userAvatar = $this->userRepository->getAvatarByUserId(intval($user["id"]));
-    unset($userAvatar["userId"], $userAvatar["publicId"]);
+    $userIds = array_column($posts, "userId");
+    $postAuthors = $this->userRepository->findByIds($userIds);
+    $postAuthors = array_map(function ($author) {
+      $avatar = $this->userRepository->getAvatarByUserId(intval($author["id"]));
+      unset($avatar["publicId"], $avatar["userId"]);
 
+      $author["avatar"] = $avatar;
+
+      return $author;
+    }, $postAuthors);
     $postIds = array_column($posts, "id");
     $postTopics = $this->postsRepository->findTopicsByPostIds($postIds);
     $postStats = $this->postsRepository->findStatsByPostIds($postIds);
@@ -40,9 +39,9 @@ class GetUserPostsAction extends PostsAction {
     $postImages = array_map(function ($id) {
       return $this->postsRepository->findImageByPostId($id);
     }, $postIds);
-    $responseBody = array_map(function ($post) use ($postTopics, $user, $userAvatar, $postStats, $postReplies, $postImages) {
+    $responseBody = array_map(function ($post) use ($postTopics, $postAuthors, $postStats, $postReplies, $postImages) {
       $post["topics"] = $this->constructPostTopics($post, $postTopics);
-      $post["author"] = array_merge($user, ["avatar" => $userAvatar]);
+      $post["author"] = $this->constructPostAuthor($post, $postAuthors);
       $post["stats"] = $this->constructPostStats($post, $postStats, $postReplies);
       $post["images"] = $this->constructPostImage($post, $postImages);
       $userId = intval($this->request->getAttribute("userId"));

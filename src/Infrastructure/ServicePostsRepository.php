@@ -125,14 +125,14 @@ class ServicePostsRepository implements PostsRepository {
     return $data;
   }
 
-  public function findTrendingPosts($limit): array {
-    $statement = "select posts.* from posts where posts.timestamp between (now() - interval 7 day) and now() limit ?, ?";
+  public function findTrendingPosts(array $limit): array {
+    $statement = "select p1.* from posts p1 inner join posts p2 on p1.id = p2.repliedPostId left join poststats s on s.postId = p1.id where p1.repliedPostId is null and p1.timestamp between (now() - interval 7 day) and now() group by p1.id order by count(s.postId) desc, count(p2.id) desc limit ?, ?";
     $this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     $preparedStatement = $this->connection->prepare($statement);
     $preparedStatement->execute($limit);
     $data = $preparedStatement->fetchAll(PDO::FETCH_ASSOC);
 
-    return $data;
+    return is_array($data) ? $data : [];
   }
 
   public function findRepliesByUserId(int $userId, array $limit): array {
