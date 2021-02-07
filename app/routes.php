@@ -40,9 +40,9 @@ return function (App $app) {
     $group->post('/login', LoginAction::class);
     $group->post('/signup', SignupAction::class);
     $group->delete('/logout', LogoutAction::class);
-    $group->get('/user', GetUserAction::class)->add(JWTMiddleWare::class);
-    $group->put('/user', UpdateUserAction::class)->add(JWTMiddleWare::class);
-  });
+    $group->get('/user', GetUserAction::class);
+    $group->put('/user', UpdateUserAction::class);
+  })->add(JWTMiddleWare::class);
 
   $app->group('/posts', function (Group $group) {
     // this need to change

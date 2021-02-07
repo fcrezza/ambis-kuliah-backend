@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Application\Handlers;
 
+use Psr\Log\LoggerInterface;
 use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
@@ -17,13 +18,18 @@ use Throwable;
 use App\Application\Actions\ActionError;
 use App\Application\Actions\ActionPayload;
 
-class HttpErrorHandler extends SlimErrorHandler
-{
+class HttpErrorHandler extends SlimErrorHandler {
+  protected $logger;
+
+  public function __construct($callableResolver, $responseFactory, LoggerInterface $logger) {
+    parent::__construct($callableResolver, $responseFactory);
+    $this->logger = $logger;
+  }
+
   /**
    * @inheritdoc
    */
-  protected function respond(): Response
-  {
+  protected function respond(): Response {
     $exception = $this->exception;
     $statusCode = 500;
     $error = new ActionError(
@@ -33,7 +39,9 @@ class HttpErrorHandler extends SlimErrorHandler
 
     if ($exception instanceof HttpException) {
       $statusCode = $exception->getCode();
-      $error->setDescription($exception->getMessage());
+      $errorMessage = $exception->getMessage();
+      $error->setMessage($errorMessage);
+      $this->logger->error($errorMessage);
 
       if ($exception instanceof HttpNotFoundException) {
         $error->setType(ActionError::RESOURCE_NOT_FOUND);
@@ -55,9 +63,10 @@ class HttpErrorHandler extends SlimErrorHandler
             && $exception instanceof Throwable
             && $this->displayErrorDetails
         ) {
-      $error->setDescription($exception->getMessage());
+      $errorMessage = $exception->getMessage();
+      $error->setMessage($errorMessage);
+      $this->logger->critical($errorMessage);
     }
-
     $payload = new ActionPayload($statusCode, null, $error);
     $encodedPayload = json_encode($payload, JSON_PRETTY_PRINT);
 

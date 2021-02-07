@@ -19,6 +19,10 @@ return PhpCsFixer\Config::create()
             'throw',
             'use',
         ),
+         'braces' => array(
+            'allow_single_line_closure' => true,
+            'position_after_functions_and_oop_constructs' => 'same',
+        ),
         'no_whitespace_before_comma_in_array' => true,
         'no_whitespace_in_blank_line' => true,
         'object_operator_without_whitespace' => true,

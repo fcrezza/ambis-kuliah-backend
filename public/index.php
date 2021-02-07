@@ -4,7 +4,7 @@ declare(strict_types=1);
 use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
 use Slim\Factory\ServerRequestCreatorFactory;
-
+use Psr\Log\LoggerInterface;
 use App\Application\Handlers\HttpErrorHandler;
 use App\Application\Handlers\ShutdownHandler;
 use App\Application\ResponseEmitter\ResponseEmitter;
@@ -18,7 +18,7 @@ $dotenv->load();
 $containerBuilder = new ContainerBuilder();
 
 if ($_ENV["APP_ENV"] === "PRODUCTION") { // Should be set to true in production
-	$containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
+  $containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
 }
 
 // Set up settings
@@ -54,7 +54,7 @@ $request = $serverRequestCreator->createServerRequestFromGlobals();
 
 // Create Error Handler
 $responseFactory = $app->getResponseFactory();
-$errorHandler = new HttpErrorHandler($callableResolver, $responseFactory);
+$errorHandler = new HttpErrorHandler($callableResolver, $responseFactory, $container->get(LoggerInterface::class));
 
 // Create Shutdown Handler
 $shutdownHandler = new ShutdownHandler($request, $errorHandler, $displayErrorDetails);

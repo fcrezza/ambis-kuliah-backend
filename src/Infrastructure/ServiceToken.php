@@ -5,11 +5,9 @@ namespace App\Infrastructure;
 
 use \Exception;
 use Firebase\JWT\JWT;
-
 use App\Domain\Token\Token;
 
 class ServiceToken implements Token {
-
   public function verifyToken(string $name, string $token) {
     try {
       $secretKey = $this->getSecretKey($name);
@@ -24,10 +22,10 @@ class ServiceToken implements Token {
     $issueAt = time();
     $expire = $issueAt;
 
-    if  ($name === "access token") {
+    if ($name === "access token") {
       // 15 mins
       $expire += 60 * 15;
-    } else if ($name === "refresh token") {
+    } elseif ($name === "refresh token") {
       // 30 days
       $expire += 60 * 60 * 24 * 30;
     } else {
@@ -41,7 +39,7 @@ class ServiceToken implements Token {
   }
 
   public function sendToken(string $name, array $payload) {
-    setcookie($name, $payload["token"], $payload["expire"], '/', 'localhost', false, true);
+    setcookie($name, $payload["token"], $payload["expire"], '/', $_ENV["COOKIE_DOMAIN"], false, true);
   }
 
   public function getSecretKey(string $name): string {
@@ -49,7 +47,7 @@ class ServiceToken implements Token {
       return $_ENV["ACCESS_TOKEN_SECRET"];
     }
 
-    if($name === "refresh token") {
+    if ($name === "refresh token") {
       return $_ENV["ACCESS_TOKEN_SECRET"];
     }
 
