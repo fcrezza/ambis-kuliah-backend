@@ -6,21 +6,25 @@ namespace App\Infrastructure;
 use \PDO as PDO;
 use App\Domain\User\UserRepository;
 
-class ServiceUserRepository implements UserRepository {
+class ServiceUserRepository implements UserRepository
+{
   private $connection;
 
-  public function __construct(PDO $conn) {
+  public function __construct(PDO $conn)
+  {
     $this->connection = $conn;
   }
 
-  public function getUserByUsername(string $username) {
+  public function getUserByUsername(string $username)
+  {
     $query = $this->connection->prepare("select * from users where username = ?");
     $query->execute([$username]);
     $result = $query->fetch(PDO::FETCH_ASSOC);
     return $result;
   }
 
-  public function findByIds(array $userIds): array {
+  public function findByIds(array $userIds): array
+  {
     $arrIdsLength = count($userIds);
     $placeholders = array_fill(0, $arrIdsLength, "?");
     $placeholders = join(",", $placeholders);
@@ -31,35 +35,40 @@ class ServiceUserRepository implements UserRepository {
     return $data;
   }
 
-  public function getUserById(int $id) {
+  public function getUserById(int $id)
+  {
     $query = $this->connection->prepare("select * from users where id = ?");
     $query->execute([$id]);
     $result = $query->fetch(PDO::FETCH_ASSOC);
     return $result;
   }
 
-  public function getUserByEmail(string $email) {
+  public function getUserByEmail(string $email)
+  {
     $query = $this->connection->prepare("select * from users where email = ?");
     $query->execute([$email]);
     $result = $query->fetch(PDO::FETCH_ASSOC);
     return $result;
   }
 
-  public function getUserPassword(int $id) {
+  public function getUserPassword(int $id)
+  {
     $query = $this->connection->prepare("select * from userpasswords where userId = ?");
     $query->execute([$id]);
     $result = $query->fetch(PDO::FETCH_ASSOC);
     return $result;
   }
 
-  public function getUserTopics(int $id) {
+  public function getUserTopics(int $id)
+  {
     $query = $this->connection->prepare("select t.id, t.name from userTopics u left join topics t on u.topicId = t.id where u.userId = ?");
     $query->execute([$id]);
     $result = $query->fetchAll(PDO::FETCH_ASSOC);
     return $result;
   }
 
-  public function insertUser(array $data) {
+  public function insertUser(array $data)
+  {
     $this->connection->beginTransaction();
     try {
       $userDataQuery = $this->connection->prepare("insert into users (email, username, fullname) values (?, ?, ?)");
@@ -76,7 +85,8 @@ class ServiceUserRepository implements UserRepository {
     }
   }
 
-  public function updateUserTopics(int $userId,array $addedTopics, array $deletedTopics) {
+  public function updateUserTopics(int $userId, array $addedTopics, array $deletedTopics)
+  {
     $this->connection->beginTransaction();
     try {
       if (count($deletedTopics)) {
@@ -100,12 +110,14 @@ class ServiceUserRepository implements UserRepository {
     }
   }
 
-  public function updateProfile(int $id, object $data) {
+  public function updateProfile(int $id, object $data)
+  {
     $query = $this->connection->prepare("update users set username = ?, fullname = ?, email = ?, bio = ? where users.id = ?");
     $query->execute([$data->username, $data->fullname, $data->email, $data->bio, $id]);
   }
 
-  public function getAvatarByUserId(int $userId): array {
+  public function getAvatarByUserId(int $userId): array
+  {
     $statement = "select * from useravatars where userId = ?";
     $query = $this->connection->prepare($statement);
     $query->execute([$userId]);
@@ -113,7 +125,8 @@ class ServiceUserRepository implements UserRepository {
     return $result;
   }
 
-  public function updateAvatar(array $payload) {
+  public function updateAvatar(array $payload)
+  {
     $statement = "update useravatars set publicId = ?, url = ? where userId = ?";
     $query = $this->connection->prepare($statement);
     $query->execute([
@@ -123,7 +136,8 @@ class ServiceUserRepository implements UserRepository {
     ]);
   }
 
-  public function insertAvatar(array $payload) {
+  public function insertAvatar(array $payload)
+  {
     $statement = "insert useravatars (publicId, url, userId) values (?, ?, ?)";
     $query = $this->connection->prepare($statement);
     $query->execute([
@@ -133,4 +147,3 @@ class ServiceUserRepository implements UserRepository {
     ]);
   }
 }
-

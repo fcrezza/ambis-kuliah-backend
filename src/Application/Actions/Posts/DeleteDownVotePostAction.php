@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\Application\Actions\Posts;
 
 use Psr\Http\Message\ResponseInterface;
-
 use App\Application\Actions\Posts\PostsAction;
 
 class DeleteDownvotePostAction extends PostsAction {

@@ -14,10 +14,10 @@ return function (ContainerBuilder $containerBuilder) {
         'level' => Logger::DEBUG,
       ],
       "database" => [
-        "host" => "localhost",
-        "name" => "ambiskuliah",
-        "username" => "root",
-        "password" => ""
+        "host" => $_ENV["DATABASE_HOST"],
+        "name" => $_ENV["DATABASE_NAME"],
+        "username" => $_ENV["DATABASE_USERNAME"],
+        "password" => $_ENV["DATABASE_PASSWORD"]
       ]
     ],
   ]);
