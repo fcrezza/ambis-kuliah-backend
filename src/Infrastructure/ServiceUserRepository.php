@@ -63,33 +63,9 @@ class ServiceUserRepository extends Repository implements UserRepository {
     $passwordQuery->execute([$payload["userId"], $payload["password"]]);
   }
 
-  public function updateUserTopics(int $userId, array $addedTopics, array $deletedTopics) {
-    $this->connection->beginTransaction();
-    try {
-      if (count($deletedTopics)) {
-        $query = $this->connection->prepare("delete from userTopics where userId = ? and topicId = ?");
-        foreach ($deletedTopics as $topic) {
-          $query->execute([$userId, $topic]);
-        }
-      }
-
-      if (count($addedTopics)) {
-        $query = $this->connection->prepare("insert userTopics (userId, topicId) values (?, ?)");
-        foreach ($addedTopics as $topic) {
-          $query->execute([$userId, $topic]);
-        }
-      }
-
-      $this->connection->commit();
-    } catch (PDOException $error) {
-      $this->connection->rollback();
-      throw $error;
-    }
-  }
-
-  public function updateProfile(int $id, object $data) {
+  public function updateProfile(array $payload) {
     $query = $this->connection->prepare("update users set username = ?, fullname = ?, email = ?, bio = ? where users.id = ?");
-    $query->execute([$data->username, $data->fullname, $data->email, $data->bio, $id]);
+    $query->execute([$payload["username"], $payload["fullname"], $payload["email"], $payload["bio"], $payload["id"]]);
   }
 
   public function getAvatarByUserId(int $userId): array {
@@ -118,6 +94,42 @@ class ServiceUserRepository extends Repository implements UserRepository {
       $payload["avatar"]["url"],
       $payload["user"]["id"]
     ]);
+  }
+
+  public function insertUserTopic(array $payload) {
+    $statement = "insert usertopics (userId, topicId) values (?, ?)";
+    $query = $this->connection->prepare($statement);
+    $query->execute([$payload["userId"], $payload["topicId"]]);
+  }
+
+  public function deleteUserTopic(array $payload) {
+    $statement = "delete from usertopics where userId = ? and topicId = ?";
+    $query = $this->connection->prepare($statement);
+    $query->execute([$payload["userId"], $payload["topicId"]]);
+  }
+
+  public function updateUserTopics(int $userId, array $addedTopics, array $deletedTopics) {
+    $this->connection->beginTransaction();
+    try {
+      if (count($deletedTopics)) {
+        $query = $this->connection->prepare("delete from userTopics where userId = ? and topicId = ?");
+        foreach ($deletedTopics as $topic) {
+          $query->execute([$userId, $topic]);
+        }
+      }
+
+      if (count($addedTopics)) {
+        $query = $this->connection->prepare("insert userTopics (userId, topicId) values (?, ?)");
+        foreach ($addedTopics as $topic) {
+          $query->execute([$userId, $topic]);
+        }
+      }
+
+      $this->connection->commit();
+    } catch (PDOException $error) {
+      $this->connection->rollback();
+      throw $error;
+    }
   }
 
   // ======== NEW API ========

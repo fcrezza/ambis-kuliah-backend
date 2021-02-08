@@ -13,7 +13,7 @@ use App\Domain\User\UserRepository;
 use App\Domain\Token\TokenRepositoryInterface;
 use App\Domain\Token\Token;
 
-class LogoutAction extends Action {
+class Logout extends Action {
   private $tokenRepository;
   private $token;
 

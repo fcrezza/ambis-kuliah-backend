@@ -6,14 +6,13 @@ use Slim\Exception\HttpNotFoundException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 use Psr\Http\Message\ResponseInterface as Response;
-use App\Application\Actions\Posts\GetAllPostsAction;
-use App\Application\Actions\Auth\LoginAction;
 use App\Application\Middleware\JWTMiddleware;
-use App\Application\Actions\Auth\LogoutAction;
-use App\Application\Actions\Auth\SignupAction;
-use App\Application\Actions\Auth\GetUserAction;
-use App\Application\Actions\Auth\UpdateUserAction;
-use App\Application\Actions\Topics\GetTopicsAction;
+use App\Application\Actions\Auth\Login;
+use App\Application\Actions\Auth\Logout;
+use App\Application\Actions\Auth\Signup;
+use App\Application\Actions\Auth\User;
+use App\Application\Actions\Topics\GetTopics;
+use App\Application\Actions\Posts\GetAllPostsAction;
 use App\Application\Actions\Posts\GetTrendingPostsAction;
 use App\Application\Actions\Posts\GetUserPostAction;
 use App\Application\Actions\Posts\DeleteUserPostAction;
@@ -26,9 +25,11 @@ use App\Application\Actions\Posts\PostDownvotesPostAction;
 use App\Application\Actions\Posts\DeleteUpvotePostAction;
 use App\Application\Actions\Posts\DeleteDownvotePostAction;
 use App\Application\Actions\Posts\GetUserPostRepliesAction;
-use App\Application\Actions\User\GetUserAction as GetUserProfileAction;
-use App\Application\Actions\User\PutUserProfileAction;
-use App\Application\Actions\User\PutUserAvatarAction;
+use App\Application\Actions\User\GetUser;
+use App\Application\Actions\User\InsertUserTopics;
+use App\Application\Actions\User\UpdateUserProfile;
+use App\Application\Actions\User\UpdateUserAvatar;
+use App\Application\Actions\User\UpdateUserTopics;
 
 return function (App $app) {
   $app->options('/{routes:.*}', function (Request $request, Response $response) {
@@ -37,11 +38,10 @@ return function (App $app) {
   });
 
   $app->group('/auth', function (Group $group) {
-    $group->post('/login', LoginAction::class);
-    $group->post('/signup', SignupAction::class);
-    $group->delete('/logout', LogoutAction::class);
-    $group->get('/user', GetUserAction::class);
-    $group->put('/user', UpdateUserAction::class);
+    $group->post('/login', Login::class);
+    $group->post('/signup', Signup::class);
+    $group->delete('/logout', Logout::class);
+    $group->get('/user', User::class);
   })->add(JWTMiddleWare::class);
 
   $app->group('/posts', function (Group $group) {
@@ -64,12 +64,15 @@ return function (App $app) {
     $group->post('/{authorUsername}/{postId}/replies', InsertPostReplyAction::class)->add(JWTMiddleWare::class);
   });
 
-  $app->get('/users/{username}', GetUserProfileAction::class);
-  $app->put('/users/{username}/profile', PutUserProfileAction::class)->add(JWTMiddleWare::class);
+  $app->group("/users", function (Group $group) {
+    $group->get('/{username}', GetUser::class);
+    $group->post('/{username}/topics', InsertUserTopics::class)->add(JWTMiddleWare::class);
+    $group->post('/{username}/avatar', UpdateUserAvatar::class)->add(JWTMiddleWare::class);
+    $group->put('/{username}/profile', UpdateUserProfile::class)->add(JWTMiddleWare::class);
+    $group->put('/{username}/topics', UpdateUserTopics::class)->add(JWTMiddleWare::class);
+  });
 
-  $app->post('/users/{username}/avatar', PutUserAvatarAction::class)->add(JWTMiddleWare::class);
-
-  $app->get('/topics', GetTopicsAction::class);
+  $app->get('/topics', GetTopics::class);
 
   /**
    * Catch-all route to serve a 404 Not Found page if none of the routes match

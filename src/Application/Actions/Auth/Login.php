@@ -16,7 +16,7 @@ use App\Domain\User\UserRepository;
 use App\Domain\Token\TokenRepositoryInterface;
 use App\Domain\Token\Token;
 
-class LoginAction extends Action {
+class Login extends Action {
   private $token;
   private $userRepository;
   private $tokenRepository;

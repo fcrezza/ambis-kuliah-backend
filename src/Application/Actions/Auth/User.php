@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface;
 use App\Application\Actions\Action;
 use App\Domain\User\UserRepository;
 
-class GetUserAction extends Action {
+class User extends Action {
   private $userRepository;
 
   public function __construct(LoggerInterface $logger, UserRepository $userRepository) {

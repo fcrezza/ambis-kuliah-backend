@@ -60,7 +60,7 @@ class JWTMiddleWare {
       $accessToken = $this->token->createToken("access token", (array)$validRefreshToken->data);
       $refreshToken = $this->token->createToken("refresh token", (array)$validRefreshToken->data);
       $this->logger->info("start saving token to database");
-      $this->tokenRepository->insertToken(["token" => $refreshToken, "userId" => $validRefreshToken->data->id]);
+      $this->tokenRepository->insertToken(["token" => $refreshToken["token"], "userId" => $validRefreshToken->data->id]);
       $this->logger->info("done saving token to database");
       $this->logger->info("done creating a new access token and refresh token");
       $this->logger->info("start sending a new access token and refresh token");
