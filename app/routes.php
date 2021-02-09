@@ -12,19 +12,20 @@ use App\Application\Actions\Auth\Logout;
 use App\Application\Actions\Auth\Signup;
 use App\Application\Actions\Auth\User;
 use App\Application\Actions\Topics\GetTopics;
-use App\Application\Actions\Posts\GetAllPostsAction;
-use App\Application\Actions\Posts\GetTrendingPostsAction;
-use App\Application\Actions\Posts\GetUserPostAction;
-use App\Application\Actions\Posts\DeleteUserPostAction;
-use App\Application\Actions\Posts\GetUserPostsAction;
-use App\Application\Actions\Posts\PostUserPostAction;
+use App\Application\Actions\Posts\GetPosts;
+use App\Application\Actions\Posts\GetFeeds;
+use App\Application\Actions\Posts\GetTrendingPosts;
+use App\Application\Actions\Posts\GetUserPost;
+use App\Application\Actions\Posts\DeleteUserPost;
+use App\Application\Actions\Posts\GetUserPosts;
+use App\Application\Actions\Posts\InsertUserPost;
 use App\Application\Actions\Posts\GetUserRepliesAction;
-use App\Application\Actions\Posts\InsertPostReplyAction;
-use App\Application\Actions\Posts\PostUpvotesPostAction;
-use App\Application\Actions\Posts\PostDownvotesPostAction;
-use App\Application\Actions\Posts\DeleteUpvotePostAction;
-use App\Application\Actions\Posts\DeleteDownvotePostAction;
-use App\Application\Actions\Posts\GetUserPostRepliesAction;
+use App\Application\Actions\Posts\InsertUserReply;
+use App\Application\Actions\Posts\InsertPostUpvote;
+use App\Application\Actions\Posts\InsertPostDownvote;
+use App\Application\Actions\Posts\DeletePostUpvote;
+use App\Application\Actions\Posts\DeletePostDownvote;
+use App\Application\Actions\Posts\GetPostReplies;
 use App\Application\Actions\User\GetUser;
 use App\Application\Actions\User\InsertUserTopics;
 use App\Application\Actions\User\UpdateUserProfile;
@@ -45,24 +46,22 @@ return function (App $app) {
   })->add(JWTMiddleWare::class);
 
   $app->group('/posts', function (Group $group) {
+    $group->get('', GetPosts::class);
+    $group->get('/feeds', GetFeeds::class);
+    $group->get('/trending', GetTrendingPosts::class);
+    $group->get('/{username}', GetUserPosts::class);
+    $group->get('/{username}/{postId}', GetUserPost::class);
+    $group->get('/{username}/{postId}/replies', GetPostReplies::class);
+    $group->post('/{username}', InsertUserPost::class);
+    $group->post('/{username}/{postId}/replies', InsertUserReply::class);
+    $group->post('/{postId}/upvotes', InsertPostUpvote::class);
+    $group->post('/{postId}/downvotes', InsertPostDownvote::class);
+    $group->delete('/{username}/{postId}', DeleteUserPost::class);
+    $group->delete('/{postId}/upvotes/{idUser}', DeletePostUpvote::class);
+    $group->delete('/{postId}/downvotes/{idUser}', DeletePostDownvote::class);
     // this need to change
-    $group->get('', GetAllPostsAction::class)->add(JWTMiddleWare::class);
-    $group->get('/trending', GetTrendingPostsAction::class);
-    // this need to change
-    $group->get('/{username}', GetUserPostsAction::class)->add(JWTMiddleWare::class);
-    // this need to change
-    $group->get('/{username}/replies', GetUserRepliesAction::class)->add(JWTMiddleWare::class);
-    $group->post('/{authorUsername}', PostUserPostAction::class)->add(JWTMiddleWare::class);
-    $group->get('/{username}/{postId}', GetUserPostAction::class)->add(JWTMiddleWare::class);
-    // this need to change
-    $group->get('/{username}/{postId}/replies', GetUserPostRepliesAction::class)->add(JWTMiddleWare::class);
-    $group->post('/{postId}/upvotes', PostUpvotesPostAction::class)->add(JWTMiddleWare::class);
-    $group->delete('/{postId}/upvotes/{idUser}', DeleteUpvotePostAction::class)->add(JWTMiddleWare::class);
-    $group->post('/{postId}/downvotes', PostDownvotesPostAction::class)->add(JWTMiddleWare::class);
-    $group->delete('/{postId}/downvotes/{idUser}', DeleteDownvotePostAction::class)->add(JWTMiddleWare::class);
-    $group->delete('/{authorUsername}/{postId}', DeleteUserPostAction::class)->add(JWTMiddleWare::class);
-    $group->post('/{authorUsername}/{postId}/replies', InsertPostReplyAction::class)->add(JWTMiddleWare::class);
-  });
+    $group->get('/{username}/replies', GetUserRepliesAction::class);
+  })->add(JWTMiddleWare::class);
 
   $app->group("/users", function (Group $group) {
     $group->get('/{username}', GetUser::class);

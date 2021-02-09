@@ -36,6 +36,6 @@ class TopicsRepository extends Repository implements TopicsRepositoryInterface {
     $preparedStatement = $this->connection->prepare($statement);
     $preparedStatement->execute([$name]);
     $data = $preparedStatement->fetch(PDO::FETCH_ASSOC);
-    return $data;
+    return is_array($data) ? $data : [];
   }
 }
