@@ -47,7 +47,7 @@ class ServiceUserRepository extends Repository implements UserRepository {
   }
 
   public function getUserTopics(int $id): array {
-    $query = $this->connection->prepare("select t.id, t.name from userTopics u left join topics t on u.topicId = t.id where u.userId = ?");
+    $query = $this->connection->prepare("select t.id, t.name from usertopics u left join topics t on u.topicId = t.id where u.userId = ?");
     $query->execute([$id]);
     $result = $query->fetchAll(PDO::FETCH_ASSOC);
     return $result;
