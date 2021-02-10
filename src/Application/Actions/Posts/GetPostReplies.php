@@ -148,6 +148,6 @@ class GetPostReplies extends Action {
     }
 
     $nextUrl = count($replyIdsWithLimit) >= $limit ? $_SERVER["HTTP_HOST"] . "/posts/$postAuthor[username]/$post[id]/replies?after=" . $replyIdsWithLimit[array_key_last($replyIdsWithLimit)] . "&limit=$limit" : null;
-    return $this->respondWithData(["replies" => $replies, "next" => $nextUrl]);
+    return $this->respondWithData(["posts" => $replies, "next" => $nextUrl]);
   }
 }

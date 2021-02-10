@@ -24,7 +24,7 @@ class ServicePostsRepository extends Repository implements PostsRepository {
   }
 
   public function getPostsByKeywords(string $keywords): array {
-    $statement = "select posts.* from posts where title like ? or contents like ?";
+    $statement = "select posts.* from posts where title like ? or contents like ? and repliedPostId is null";
     $preparedStatement = $this->connection->prepare($statement);
     $preparedStatement->execute(["%$keywords%", "%$keywords%"]);
     $data = $preparedStatement->fetchAll(PDO::FETCH_ASSOC);
