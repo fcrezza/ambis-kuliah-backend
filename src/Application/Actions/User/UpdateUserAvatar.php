@@ -62,9 +62,9 @@ class UpdateUserAvatar extends Action {
 
     $userAvatar = $this->userRepository->getUserAvatar($user["id"]);
     Cloudinary::config([
-      "cloud_name" => $_ENV["CLOUDINARY_CLOUD"],
-      "api_key" => $_ENV["CLOUDINARY_KEY"],
-      "api_secret" => $_ENV["CLOUDINARY_SECRET"]
+      "cloud_name" => getenv("CLOUDINARY_CLOUD"),
+      "api_key" => getenv("CLOUDINARY_KEY"),
+      "api_secret" => getenv("CLOUDINARY_SECRET")
     ]);
 
     if ($userAvatar["publicId"]) {

@@ -39,16 +39,16 @@ class ServiceToken implements Token {
   }
 
   public function sendToken(string $name, array $payload) {
-    setcookie($name, $payload["token"], $payload["expire"], '/', $_ENV["COOKIE_DOMAIN"], false, true);
+    setcookie($name, $payload["token"], $payload["expire"], '/', getenv("COOKIE_DOMAIN"), false, true);
   }
 
   public function getSecretKey(string $name): string {
     if ($name === "access token") {
-      return $_ENV["ACCESS_TOKEN_SECRET"];
+      return getenv("ACCESS_TOKEN_SECRET");
     }
 
     if ($name === "refresh token") {
-      return $_ENV["ACCESS_TOKEN_SECRET"];
+      return getenv("ACCESS_TOKEN_SECRET");
     }
 
     throw new Exception("invalid token name");

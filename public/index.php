@@ -11,13 +11,15 @@ use App\Application\ResponseEmitter\ResponseEmitter;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..') ;
-$dotenv->load();
+if (file_exists('../.env')) {
+  $dotenv = Dotenv\Dotenv::createUnsafeImmutable(__DIR__ . "/../");
+  $dotenv->load();
+}
 
 // Instantiate PHP-DI ContainerBuilder
 $containerBuilder = new ContainerBuilder();
 
-if ($_ENV["APP_ENV"] === "PRODUCTION") { // Should be set to true in production
+if (getenv("APP_ENV") === "PRODUCTION") { // Should be set to true in production
   $containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
 }
 

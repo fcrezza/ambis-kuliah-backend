@@ -6,17 +6,15 @@ namespace App\Application\ResponseEmitter;
 use Psr\Http\Message\ResponseInterface;
 use Slim\ResponseEmitter as SlimResponseEmitter;
 
-class ResponseEmitter extends SlimResponseEmitter
-{
-    /**
-     * {@inheritdoc}
-     */
-    public function emit(ResponseInterface $response): void
-    {
-        // This variable should be set to the allowed host from which your API can be accessed with
-        $origin = $_ENV["CLIENT_ORIGIN"];
+class ResponseEmitter extends SlimResponseEmitter {
+  /**
+   * {@inheritdoc}
+   */
+  public function emit(ResponseInterface $response): void {
+    // This variable should be set to the allowed host from which your API can be accessed with
+    $origin = getenv("CLIENT_ORIGIN");
 
-        $response = $response
+    $response = $response
             ->withHeader('Access-Control-Allow-Credentials', 'true')
             ->withHeader('Access-Control-Allow-Origin', $origin)
             ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
@@ -26,10 +24,10 @@ class ResponseEmitter extends SlimResponseEmitter
             ->withHeader('Pragma', 'no-cache')
             ;
 
-        if (ob_get_contents()) {
-            ob_clean();
-        }
-
-        parent::emit($response);
+    if (ob_get_contents()) {
+      ob_clean();
     }
+
+    parent::emit($response);
+  }
 }
